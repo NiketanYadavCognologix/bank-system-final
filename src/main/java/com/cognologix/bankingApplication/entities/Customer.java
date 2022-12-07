@@ -1,50 +1,69 @@
 package com.cognologix.bankingApplication.entities;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
 
 @Data
-//@Entity
+@Entity
 @XmlRootElement
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "customer")
 public class Customer {
 	
 	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "customerId")
 	private Integer customerId;
 
-//	@NotEmpty(message = "Account holder name cannot blank")
+	@Column(name = "customerName")
+	@NotEmpty(message = "Account holder name cannot blank")
 	private String customerName;
 
-//	@NotEmpty(message = "Date of birth cannot blank")
-	private String dateOfBirth;
+	@Column(name = "dateOfBirth")
+	@NotNull(message = "Date of birth cannot blank")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private LocalDate dateOfBirth;
 
-//	@NotEmpty(message = "Adhar number cannot blank")
-//	@Size(min = 12, max = 12, message = "Adhar number should be 12 character")
+	@Column(name = "adharNumber",unique = true)
+	@NotEmpty(message = "Adhar number cannot blank")
+	@Size(min = 12, max = 12, message = "Adhar number should be 12 character")
 	private String adharNumber;
 
-//	@NotEmpty(message = "PAN number cannot blank")
+	@Column(name = "panCardNumber",unique = true)
+	@NotEmpty(message = "PAN number cannot blank")
+	@Size(min = 10, max = 10, message = "Adhar number should be 10 character...")
 	private String panCardNumber;
 
-//	@Email(message = "Email id cannot blank")
+	@Column(name = "emailId",unique = true)
+	@Email(message = "Please enter valid email id....")
 	private String emailId;
 
-//	@NotEmpty(message = "Gender cannot blank")
+	@Column(name = "gender")
+	@NotEmpty(message = "Gender cannot blank")
 	private String gender;
-
-//	@OneToOne(cascade= CascadeType.ALL)
 
 	@Override
 	public String toString() {
-		String messageBody = "customerName={0} | dateOfBirth={1} | " +
-				"adharNumber={2} | PanNumber={3} | EmailId={4} | gender={5}";
-		return java.text.MessageFormat.format(messageBody, customerName,
+		String messageBody = "CustomerId={0} | customerName={1} | dateOfBirth={2} | " +
+				"adharNumber={3} | PanNumber={4} | EmailId={5} | gender={6}";
+		return java.text.MessageFormat.format(messageBody,customerId, customerName,
 				dateOfBirth, adharNumber,panCardNumber,emailId,gender);
 	}
 

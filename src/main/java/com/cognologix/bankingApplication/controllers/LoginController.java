@@ -1,6 +1,6 @@
 package com.cognologix.bankingApplication.controllers;
 
-import com.cognologix.bankingApplication.services.BankOperationsSevice;
+import com.cognologix.bankingApplication.services.BankOperationsService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import java.util.Map;
 public class LoginController {
 
     @Autowired
-    BankOperationsSevice bankOperationsSevice;
+    BankOperationsService bankOperationsService;
     public ResponseEntity<?> loginToAccount(@RequestBody Map<String, String> loginCredentials) {
         JSONObject signInResult = new JSONObject();
 //		signInResult.put("Sucessfully login..,",bankOperationsSevice.loginByCustomer(loginCredentials));

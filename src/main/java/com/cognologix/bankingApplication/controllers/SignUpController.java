@@ -1,13 +1,7 @@
 package com.cognologix.bankingApplication.controllers;
 
-import com.cognologix.bankingApplication.entities.Customer;
-import com.cognologix.bankingApplication.services.BankOperationsSevice;
-import org.json.JSONObject;
+import com.cognologix.bankingApplication.services.BankOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/signUp")
 public class SignUpController {
     @Autowired
-    private BankOperationsSevice bankOperationsSevice;
+    private BankOperationsService bankOperationsSevice;
 
 //    @PostMapping(value = "/newAccount",
 //            consumes = { "application/json", "application/xml" },
@@ -27,4 +21,6 @@ public class SignUpController {
 //        System.out.println(signUpResult);
 //        return new ResponseEntity<JSONObject>(signUpResult, HttpStatus.CREATED);
 //    }
+
+
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/home")
 public class BankHomePageController {
 
-    public ResponseEntity<?> homePageMassage(){
-        return new ResponseEntity<String>("Welcome to Cognologix banking application", HttpStatus.OK);
+    public ResponseEntity<String> homePageMassage(){
+        return new ResponseEntity<>("Welcome to Cognologix banking application", HttpStatus.OK);
     }
 }
