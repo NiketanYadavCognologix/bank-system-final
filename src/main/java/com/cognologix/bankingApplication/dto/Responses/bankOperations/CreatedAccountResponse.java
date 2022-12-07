@@ -8,12 +8,21 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreatedAccountResponse extends BaseResponse {
-    CreateAccountResponseDto createAccountResponseDto;
 
-    public CreatedAccountResponse(Boolean success, String message, CreateAccountResponseDto createAccountResponseDto) {
+    private String customerName;
+    private Long accountNumber;
+    private String accountType;
+    private String status;
+    private Double balance;
+
+    public CreatedAccountResponse(Boolean success, String message, Account account) {
         super(success);
         this.setMessage(message);
-        this.createAccountResponseDto = createAccountResponseDto;
+        customerName=account.getCustomer().getCustomerName();
+        accountNumber=account.getAccountNumber();
+        accountType=account.getAccountType();
+        status=account.getStatus();
+        balance=account.getBalance();
     }
 
 }

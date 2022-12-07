@@ -55,19 +55,11 @@ public class BankServiceMockito {
     @Test
     public void testCreateAccount() {
 
-        CreateAccountResponseDto createAccountResponseDto=new CreateAccountResponseDto();
-        createAccountResponseDto.setCustomerName(account.getCustomer().getCustomerName());
-        createAccountResponseDto.setAccountNumber(account.getAccountNumber());
-        createAccountResponseDto.setAccountType(account.getAccountType());
-        createAccountResponseDto.setStatus(account.getStatus());
-        createAccountResponseDto.setBalance(account.getBalance());
-
         when(customerRepository.findByCustomerIdEquals(accountDto.getCustomerId())).thenReturn(customer);
         when(bankAccountRepository.findAll()).thenReturn(accounts);
         when(bankAccountRepository.save(account)).thenReturn(account);
-
         CreatedAccountResponse expected = new CreatedAccountResponse(true,
-                "Account created successfully...", createAccountResponseDto);
+                "Account created successfully...", account);
 
         CreatedAccountResponse actual = bankOperationServiceImplementation.createAccount(accountDto);
 

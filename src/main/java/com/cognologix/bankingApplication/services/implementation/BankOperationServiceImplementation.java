@@ -62,6 +62,9 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
             //adding information from AccountDTO in account
             Customer customer = customerRepository.findByCustomerIdEquals(accountDto.getCustomerId());
+            if(customer==null){
+                throw new CustomerNotFoundException("Given id customer is not available...");
+            }
             accountToSave.setCustomer(customer);
 
             //check the type account for given customer is already available or not
@@ -72,17 +75,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
             //the matching account will be found then throws exception
             if (matchingAccount.isEmpty()) {
-                Account account = bankAccountRepository.save(accountToSave);
+                bankAccountRepository.save(accountToSave);
 
-                CreateAccountResponseDto createAccountResponseDto=new CreateAccountResponseDto();
-                createAccountResponseDto.setCustomerName(account.getCustomer().getCustomerName());
-                createAccountResponseDto.setAccountNumber(account.getAccountNumber());
-                createAccountResponseDto.setAccountType(account.getAccountType());
-                createAccountResponseDto.setStatus(account.getStatus());
-                createAccountResponseDto.setBalance(account.getBalance());
-                
                 //proper response after creating new account
-                CreatedAccountResponse createdAccountResponse = new CreatedAccountResponse(true,"Account created successfully...",createAccountResponseDto);
+                CreatedAccountResponse createdAccountResponse = new CreatedAccountResponse(true, "Account created successfully...", accountToSave);
 
                 //return the custom response
                 return createdAccountResponse;
@@ -98,7 +94,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
         } catch (CustomerNotFoundException exception) {
             exception.printStackTrace();
             throw new CustomerNotFoundException(exception.getMessage());
-        }catch (Exception exception) {
+        } catch (Exception exception) {
             exception.printStackTrace();
             throw new RuntimeException(exception.getMessage());
         }
@@ -286,8 +282,8 @@ public class BankOperationServiceImplementation implements BankOperationsService
             depositTransaction.setDateOfTransaction(LocalDateTime.now());
             transactionRepository.save(depositTransaction);
 
-            TransferAmountResponse transferAmountResponse=new TransferAmountResponse(true,
-                    "Amount " + amountForTransfer + " transferred successfully... \nRemaining balance is "+updatedBalance);
+            TransferAmountResponse transferAmountResponse = new TransferAmountResponse(true,
+                    "Amount " + amountForTransfer + " transferred successfully... \nRemaining balance is " + updatedBalance);
             return transferAmountResponse;
         } catch (DeactivateAccountException exception) {
             exception.printStackTrace();
@@ -319,7 +315,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
             transactionDtos.add(transactionDto);
         });
-        TransactionStatementResponse transactionStatementResponse=new TransactionStatementResponse(true,transactionDtos);
+        TransactionStatementResponse transactionStatementResponse = new TransactionStatementResponse(true, transactionDtos);
         return transactionStatementResponse;
     }
 
@@ -332,7 +328,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             }
             accountToDeactivate.setStatus("deactivated");
             bankAccountRepository.save(accountToDeactivate);
-            DeactivateAccountResponse deactivateAccountResponse = new DeactivateAccountResponse(true,"Successfully deactivated " + accountNumber + " number account");
+            DeactivateAccountResponse deactivateAccountResponse = new DeactivateAccountResponse(true, "Successfully deactivated " + accountNumber + " number account");
             return deactivateAccountResponse;
         } catch (AccountAlreadyDeactivatedException exception) {
             throw new AccountAlreadyDeactivatedException(exception.getMessage());
@@ -352,7 +348,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             accountToDeactivate.setStatus("Active");
             bankAccountRepository.save(accountToDeactivate);
 
-            ActivateAccountResponse activateAccountResponse = new ActivateAccountResponse(true,"Successfully activated " + accountNumber + " number account");
+            ActivateAccountResponse activateAccountResponse = new ActivateAccountResponse(true, "Successfully activated " + accountNumber + " number account");
             return activateAccountResponse;
         } catch (AccountAlreadyActivatedException exception) {
             exception.printStackTrace();
@@ -370,7 +366,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             if (deactivatedAccounts.isEmpty()) {
                 throw new AccountNotAvailableException("No deactivated Account found...");
             }
-            DeactivatedAccountsResponse deactivatedAccountsResponse = new DeactivatedAccountsResponse(true,"Deactivated accounts are...",deactivatedAccounts);
+            DeactivatedAccountsResponse deactivatedAccountsResponse = new DeactivatedAccountsResponse(true, "Deactivated accounts are...", deactivatedAccounts);
             return deactivatedAccountsResponse;
         } catch (AccountNotAvailableException exception) {
             exception.printStackTrace();
