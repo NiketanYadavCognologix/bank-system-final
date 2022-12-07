@@ -4,7 +4,13 @@ import com.cognologix.bankingApplication.dao.BankAccountRepository;
 import com.cognologix.bankingApplication.dao.CustomerRepository;
 import com.cognologix.bankingApplication.dao.TransactionRepository;
 import com.cognologix.bankingApplication.dto.AccountDto;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.*;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.ActivateAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.CreatedAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivateAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivatedAccountsResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.DepositAmountResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.TransferAmountResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.WithdrawAmountResponse;
 import com.cognologix.bankingApplication.entities.Account;
 import com.cognologix.bankingApplication.entities.Customer;
 import com.cognologix.bankingApplication.entities.transactions.BankTransaction;
@@ -21,7 +27,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {BankOperationsServiceTest.class})
+@SpringBootTest(classes = {BankServiceMockito.class})
 public class BankServiceMockito {
 
     @Mock
