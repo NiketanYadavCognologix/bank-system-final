@@ -88,7 +88,7 @@ public class BankServiceMockito {
 
         when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
         when(bankAccountRepository.save(account)).thenReturn(account);
-        when(transactionRepository.save(transaction)).thenReturn(transaction);
+//        when(transactionRepository.save(transaction)).thenReturn(transaction);
 
         DepositAmountResponse actual = bankOperationServiceImplementation.deposit(account.getAccountNumber(), amountToDeposit);
 
@@ -124,7 +124,7 @@ public class BankServiceMockito {
         when(bankAccountRepository.save(account)).thenReturn(account);
         when(bankAccountRepository.findByAccountNumberEquals(accountForReceiveMoney.getAccountNumber())).thenReturn(accountForReceiveMoney);
         when(bankAccountRepository.save(accountForReceiveMoney)).thenReturn(accountForReceiveMoney);
-        when(transactionRepository.save(transaction)).thenReturn(transaction);
+//        when(transactionRepository.save(transaction)).thenReturn(transaction);
 
         TransferAmountResponse expected = bankOperationServiceImplementation.moneyTransfer(fromAccount, toAccount, amountForTransfer);
         TransferAmountResponse actual = new TransferAmountResponse(true,

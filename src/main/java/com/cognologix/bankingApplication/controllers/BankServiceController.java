@@ -24,7 +24,7 @@ import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
 @RestController
-@RequestMapping("/banking")
+@RequestMapping("/account")
 public class BankServiceController {
 
     //bank side operations
@@ -32,7 +32,7 @@ public class BankServiceController {
     BankOperationsService bankOperationsService;
 
     //creating new account by giving account DTO
-    @PostMapping(value = "/createAccount", consumes = {"application/json", "application/xml"})
+    @PostMapping(value = "/create", consumes = {"application/json", "application/xml"})
     public ResponseEntity<CreatedAccountResponse> createNewAccount(@Valid @RequestBody AccountDto accountDto) {
         CreatedAccountResponse createdAccountResponse = bankOperationsService.createAccount(accountDto);
         HttpStatus httpStatus = createdAccountResponse.getSuccess() ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST;
@@ -40,7 +40,7 @@ public class BankServiceController {
     }
 
     //deactivating given account by account number
-    @PutMapping("/deactivateAccount")
+    @PutMapping("/deactivate")
     public ResponseEntity<DeactivateAccountResponse> deactivateAccountByAccountNumber(@PathParam(value = "accountNumber") Long accountNumber) {
         DeactivateAccountResponse deactivateAccountResponse = bankOperationsService.deactivateAccountByAccountNumber(accountNumber);
         HttpStatus httpStatus = deactivateAccountResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
@@ -48,7 +48,7 @@ public class BankServiceController {
     }
 
     //activating given account by account number
-    @PutMapping("/activateAccount")
+    @PutMapping("/activate")
     public ResponseEntity<ActivateAccountResponse> activateAccountBYAccountNumber(@PathParam(value = "accountNumber") Long accountNumber) {
         ActivateAccountResponse activateAccountResponse = bankOperationsService.activateAccountByAccountNumber(accountNumber);
         HttpStatus httpStatus = activateAccountResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
@@ -64,7 +64,7 @@ public class BankServiceController {
     }
 
     //deposit amount to the given account number
-    @PutMapping(value = "/deposit")
+    @PutMapping(value = "/depositAmount")
     public ResponseEntity<DepositAmountResponse> depositAmount(@PathParam(value = "amount") Double amount, @PathParam(value = "accountNumber") Long accountNumber) {
         DepositAmountResponse depositAmountResponse = bankOperationsService.deposit(accountNumber, amount);
         HttpStatus httpStatus = depositAmountResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
@@ -72,7 +72,7 @@ public class BankServiceController {
     }
 
     //withdraw amount to the given account number
-    @PutMapping(value = "/withdraw")
+    @PutMapping(value = "/withdrawAmount")
     public ResponseEntity<WithdrawAmountResponse> withdrawAmount(@PathParam(value = "amount") Double amount, @PathParam(value = "accountNumber") Long accountNumber) {
         WithdrawAmountResponse withdrawAmountResponse = bankOperationsService.withdraw(accountNumber, amount);
         HttpStatus httpStatus = withdrawAmountResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
@@ -80,7 +80,7 @@ public class BankServiceController {
     }
 
     //transferring amount from one account to another account
-    @PutMapping("/transfer")
+    @PutMapping("/transferAmount")
     public ResponseEntity<TransferAmountResponse> moneyTransfer(@PathParam(value = "senderAccountNumber") Long senderAccountNumber, @PathParam(value = "receiverAccountNumber") Long receiverAccountNumber, @PathParam(value = "amount") Double amount) {
         TransferAmountResponse transferAmountResponse = bankOperationsService.moneyTransfer(senderAccountNumber, receiverAccountNumber, amount);
         HttpStatus httpStatus = transferAmountResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;

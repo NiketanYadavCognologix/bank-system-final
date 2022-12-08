@@ -32,16 +32,16 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
         try {
             customerRepository.findAll().stream().forEach(customerFromList -> {
                 if (customerFromList.getAdharNumber().equals(customer.getAdharNumber())) {
-                    throw new CustomerAlreadyExistException("Customer is already exist by same adhar number....");
+                    throw new CustomerAlreadyExistException("Customer is already exist by same adhar number");
                 } else if (customerFromList.getPanCardNumber().equals(customer.getPanCardNumber())) {
-                    throw new CustomerAlreadyExistException("Customer is already exist by same PanCard number....");
+                    throw new CustomerAlreadyExistException("Customer is already exist by same PanCard number");
                 } else if (customerFromList.getEmailId().equals(customer.getEmailId())) {
-                    throw new CustomerAlreadyExistException("Customer is already exist by same email....");
+                    throw new CustomerAlreadyExistException("Customer is already exist by same email");
                 }
             });
             Customer customerCreated = customerRepository.save(customer);
             CreateCustomerResponse createAccountResponse = new CreateCustomerResponse(true,
-                    customer.getCustomerName() + " you have register successfully..."
+                    customer.getCustomerName() + " you register successfully."
                     , customerCreated);
             return createAccountResponse;
         } catch (CustomerAlreadyExistException exception) {
@@ -57,7 +57,7 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
         try {
             Account accountAvailable = bankAccountRepository.findByAccountNumberEquals(accountNumber);
             if (accountAvailable == null) {
-                throw new AccountNotAvailableException("Account for given account number does not exist...");
+                throw new AccountNotAvailableException("Account not available");
             }
             Double availableBalance = bankAccountRepository.findByAccountNumberEquals(accountNumber).getBalance();
             BalanceInquiryResponse balanceInquiryResponse = new BalanceInquiryResponse(true,
@@ -85,25 +85,25 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
         try {
             Customer customerFound = customerRepository.findByCustomerIdEquals(customer.getCustomerId());
             if (customerFound == null) {
-                throw new CustomerNotFoundException("Given id customer is not available....");
+                throw new CustomerNotFoundException("Customer not available");
             }
             customerRepository.findAll().stream()
-                    .filter(customerFromCustomerList -> customerFromCustomerList.getCustomerId() != customer.getCustomerId())
+                    .filter(customerFromCustomerList -> !customerFromCustomerList.getCustomerId() .equals( customer.getCustomerId()))
                     .collect(Collectors.toList())
                     .stream()
                     .forEach(nonMatchingCustomer -> {
                         if (nonMatchingCustomer.getAdharNumber().equals(customer.getAdharNumber())) {
-                            throw new CustomerAlreadyExistException("Error : customer you are going to update have adhar number which is already exist....\nPlease enter another adhar number");
+                            throw new CustomerAlreadyExistException("Error : customer you are going to update have adhar number which is already exist\nPlease enter another adhar number");
                         } else if (nonMatchingCustomer.getPanCardNumber().equals(customer.getPanCardNumber())) {
-                            throw new CustomerAlreadyExistException("Error : customer you are going to update have pan card number which is already exist....\nPlease enter another pan number");
+                            throw new CustomerAlreadyExistException("Error : customer you are going to update have pan card number which is already exist\nPlease enter another pan number");
                         } else if (nonMatchingCustomer.getEmailId().equals(customer.getEmailId())) {
-                            throw new CustomerAlreadyExistException("Error : customer you are going to update have same email id which is already exist....\nPlease enter another email id");
+                            throw new CustomerAlreadyExistException("Error : customer you are going to update have same email id which is already exist\nPlease enter another email id");
                         }
                     });
 
             customerRepository.save(customer);
             CustomerUpdateResponse customerUpdateResponse = new CustomerUpdateResponse(true, customer.getCustomerName()
-                    + " updated successfully...");
+                    + " updated successfully");
             return customerUpdateResponse;
         }catch (CustomerAlreadyExistException exception){
             exception.printStackTrace();

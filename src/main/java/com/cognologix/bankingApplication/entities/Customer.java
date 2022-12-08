@@ -59,12 +59,4 @@ public class Customer {
 	@NotEmpty(message = "Gender cannot blank")
 	private String gender;
 
-	@Override
-	public String toString() {
-		String messageBody = "CustomerId={0} | customerName={1} | dateOfBirth={2} | " +
-				"adharNumber={3} | PanNumber={4} | EmailId={5} | gender={6}";
-		return java.text.MessageFormat.format(messageBody,customerId, customerName,
-				dateOfBirth, adharNumber,panCardNumber,emailId,gender);
-	}
-
 }

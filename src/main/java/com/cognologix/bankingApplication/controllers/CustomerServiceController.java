@@ -33,7 +33,7 @@ public class CustomerServiceController {
     BankOperationsService bankOperationsService;
 
     //create and return created customer by giving parameter to customer
-    @PostMapping(value = "/createCustomer",
+    @PostMapping(value = "/create",
             consumes = {"application/json", "application/xml"})
     public ResponseEntity<CreateCustomerResponse> createNewAccount(@Valid @RequestBody Customer customer) {
         CreateCustomerResponse createCustomerResponse = customerOperationService.createNewCustomer(customer);
@@ -58,7 +58,7 @@ public class CustomerServiceController {
     }
 
     //updating the customer information
-    @PatchMapping("/updateCustomer")
+    @PatchMapping("/update")
     public ResponseEntity<CustomerUpdateResponse> updateInformationOfCustomer(@RequestBody Customer customer) {
         CustomerUpdateResponse customerUpdateResponse = customerOperationService.updateCustomer(customer);
         HttpStatus httpStatus = customerUpdateResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
