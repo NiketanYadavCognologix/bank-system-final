@@ -4,6 +4,7 @@ import com.cognologix.bankingApplication.dao.BankAccountRepository;
 import com.cognologix.bankingApplication.dao.CustomerRepository;
 import com.cognologix.bankingApplication.dao.TransactionRepository;
 import com.cognologix.bankingApplication.dto.AccountDto;
+import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.TransactionStatementResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.ActivateAccountResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.CreatedAccountResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivateAccountResponse;
@@ -12,7 +13,6 @@ import com.cognologix.bankingApplication.dto.Responses.bankOperations.DepositAmo
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.TransferAmountResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.WithdrawAmountResponse;
 import com.cognologix.bankingApplication.dto.TransactionDto;
-import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.TransactionStatementResponse;
 import com.cognologix.bankingApplication.entities.Account;
 import com.cognologix.bankingApplication.entities.Customer;
 import com.cognologix.bankingApplication.entities.transactions.BankTransaction;
@@ -68,7 +68,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
             //adding information from AccountDTO in account
             Customer customer = customerRepository.findByCustomerIdEquals(accountDto.getCustomerId());
-            if(customer==null){
+            if (customer == null) {
                 throw new CustomerNotFoundException("Customer not available");
             }
             accountToSave.setCustomer(customer);
@@ -231,7 +231,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
         } catch (InsufficientBalanceException exception) {
             exception.printStackTrace();
             throw new InsufficientBalanceException(exception.getMessage());
-        }catch (Exception exception) {
+        } catch (Exception exception) {
             exception.printStackTrace();
             throw new RuntimeException(exception.getMessage());
         }
@@ -380,7 +380,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
         } catch (AccountNotAvailableException exception) {
             exception.printStackTrace();
             throw new AccountNotAvailableException(exception.getMessage());
-        }catch (Exception exception) {
+        } catch (Exception exception) {
             exception.printStackTrace();
             throw new RuntimeException(exception.getMessage());
         }

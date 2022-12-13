@@ -4,11 +4,24 @@ import com.cognologix.bankingApplication.dao.BankAccountRepository;
 import com.cognologix.bankingApplication.dao.CustomerRepository;
 import com.cognologix.bankingApplication.dao.TransactionRepository;
 import com.cognologix.bankingApplication.dto.AccountDto;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.*;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.ActivateAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.CreatedAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivateAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivatedAccountsResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.DepositAmountResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.TransferAmountResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.WithdrawAmountResponse;
 import com.cognologix.bankingApplication.entities.Account;
 import com.cognologix.bankingApplication.entities.Customer;
 import com.cognologix.bankingApplication.entities.transactions.BankTransaction;
-import com.cognologix.bankingApplication.exceptions.*;
+import com.cognologix.bankingApplication.exceptions.AccountAlreadyActivatedException;
+import com.cognologix.bankingApplication.exceptions.AccountAlreadyDeactivatedException;
+import com.cognologix.bankingApplication.exceptions.AccountAlreadyExistException;
+import com.cognologix.bankingApplication.exceptions.AccountNotAvailableException;
+import com.cognologix.bankingApplication.exceptions.CustomerNotFoundException;
+import com.cognologix.bankingApplication.exceptions.DeactivateAccountException;
+import com.cognologix.bankingApplication.exceptions.IllegalTypeOfAccountException;
+import com.cognologix.bankingApplication.exceptions.InsufficientBalanceException;
 import com.cognologix.bankingApplication.services.implementation.BankOperationServiceImplementation;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -102,9 +115,11 @@ public class BankServiceMockito {
 
             when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
             when(bankAccountRepository.save(account)).thenReturn(account);
-            when(bankOperationServiceImplementation.depositAmount(account.getAccountNumber(), amountToDeposit)).thenThrow(Exception.class);
+            when(bankOperationServiceImplementation.depositAmount(account.getAccountNumber(),
+                    amountToDeposit)).thenThrow(Exception.class);
 
-            DepositAmountResponse actual = bankOperationServiceImplementation.depositAmount(account.getAccountNumber(), amountToDeposit);
+            DepositAmountResponse actual = bankOperationServiceImplementation.depositAmount(account.getAccountNumber(),
+                    amountToDeposit);
 
             DepositAmountResponse expected = new DepositAmountResponse(true,
                     amountToDeposit + " deposited successfully... \nAvailable balance is : " + updatedBalance);
@@ -124,9 +139,11 @@ public class BankServiceMockito {
 
             when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
             when(bankAccountRepository.save(account)).thenReturn(account);
-            when(bankOperationServiceImplementation.withdrawAmount(account.getAccountNumber(), amountToWithdraw)).thenThrow(Exception.class);
+            when(bankOperationServiceImplementation.withdrawAmount(account.getAccountNumber(), amountToWithdraw))
+                    .thenThrow(Exception.class);
 
-            WithdrawAmountResponse actual = bankOperationServiceImplementation.withdrawAmount(account.getAccountNumber(), amountToWithdraw);
+            WithdrawAmountResponse actual = bankOperationServiceImplementation.withdrawAmount(account.getAccountNumber(),
+                    amountToWithdraw);
 
             WithdrawAmountResponse expected = new WithdrawAmountResponse(true,
                     amountToWithdraw + " withdraw successfully... \nAvailable balance is : " + updatedBalance);
@@ -148,11 +165,14 @@ public class BankServiceMockito {
 
             when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
             when(bankAccountRepository.save(account)).thenReturn(account);
-            when(bankAccountRepository.findByAccountNumberEquals(accountForReceiveMoney.getAccountNumber())).thenReturn(accountForReceiveMoney);
+            when(bankAccountRepository.findByAccountNumberEquals(accountForReceiveMoney.getAccountNumber()))
+                    .thenReturn(accountForReceiveMoney);
             when(bankAccountRepository.save(accountForReceiveMoney)).thenReturn(accountForReceiveMoney);
-            when(bankOperationServiceImplementation.moneyTransfer(fromAccount, toAccount, amountForTransfer)).thenThrow(Exception.class);
+            when(bankOperationServiceImplementation.moneyTransfer(fromAccount, toAccount, amountForTransfer))
+                    .thenThrow(Exception.class);
 
-            TransferAmountResponse expected = bankOperationServiceImplementation.moneyTransfer(fromAccount, toAccount, amountForTransfer);
+            TransferAmountResponse expected = bankOperationServiceImplementation.moneyTransfer(fromAccount,
+                    toAccount, amountForTransfer);
             TransferAmountResponse actual = new TransferAmountResponse(true,
                     "Amount " + amountForTransfer + " transferred successfully... \nRemaining balance is " + updatedBalance);
 
@@ -173,9 +193,11 @@ public class BankServiceMockito {
             Account activatedAccount = account;
             activatedAccount.setAccountType("Active");
             when(bankAccountRepository.save(activatedAccount)).thenReturn(activatedAccount);
-            when(bankOperationServiceImplementation.activateAccountByAccountNumber(account.getAccountNumber())).thenThrow(Exception.class);
+            when(bankOperationServiceImplementation.activateAccountByAccountNumber(account.getAccountNumber()))
+                    .thenThrow(Exception.class);
             ActivateAccountResponse actual = bankOperationServiceImplementation.activateAccountByAccountNumber(account.getAccountNumber());
-            ActivateAccountResponse expected = new ActivateAccountResponse(true, "Successfully activated " + activatedAccount.getAccountNumber() + " number account");
+            ActivateAccountResponse expected = new ActivateAccountResponse(true, "Successfully activated "
+                    + activatedAccount.getAccountNumber() + " number account");
 
             assertEquals(expected, actual);
         } catch (AccountAlreadyActivatedException exception) {
@@ -192,10 +214,12 @@ public class BankServiceMockito {
             deactivatedAccount = account;
             deactivatedAccount.setAccountType("deactivated");
             when(bankAccountRepository.save(deactivatedAccount)).thenReturn(deactivatedAccount);
-            when(bankOperationServiceImplementation.deactivateAccountByAccountNumber(account.getAccountNumber())).thenThrow(Exception.class);
+            when(bankOperationServiceImplementation.deactivateAccountByAccountNumber(account.getAccountNumber()))
+                    .thenThrow(Exception.class);
 
             DeactivateAccountResponse actual = bankOperationServiceImplementation.deactivateAccountByAccountNumber(account.getAccountNumber());
-            DeactivateAccountResponse expected = new DeactivateAccountResponse(true, "Successfully deactivated " + deactivatedAccount.getAccountNumber() + " number account");
+            DeactivateAccountResponse expected = new DeactivateAccountResponse(true,
+                    "Successfully deactivated " + deactivatedAccount.getAccountNumber() + " number account");
 
             assertEquals(expected, actual);
         } catch (AccountAlreadyDeactivatedException exception) {
@@ -217,7 +241,8 @@ public class BankServiceMockito {
             when(bankAccountRepository.findDeactivatedAccounts()).thenReturn(deactivatedAccounts);
             when(bankOperationServiceImplementation.getAllDeactivatedAccounts()).thenThrow(Exception.class);
             DeactivatedAccountsResponse actual = bankOperationServiceImplementation.getAllDeactivatedAccounts();
-            DeactivatedAccountsResponse expected = new DeactivatedAccountsResponse(true, "Deactivated accounts are...", deactivatedAccounts);
+            DeactivatedAccountsResponse expected = new DeactivatedAccountsResponse(true,
+                    "Deactivated accounts are...", deactivatedAccounts);
 
             assertEquals(expected, actual);
         } catch (AccountNotAvailableException exception) {
