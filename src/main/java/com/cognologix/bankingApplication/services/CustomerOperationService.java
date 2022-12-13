@@ -10,6 +10,5 @@ public interface CustomerOperationService {
     CreateCustomerResponse createNewCustomer(Customer customer);
     BalanceInquiryResponse getAccountBalance(Long accountNumber);
     GetAllCustomerResponse getAllCustomers();
-
     CustomerUpdateResponse updateCustomer(Customer customer);
 }

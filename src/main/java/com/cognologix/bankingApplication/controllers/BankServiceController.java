@@ -66,7 +66,7 @@ public class BankServiceController {
     //deposit amount to the given account number
     @PutMapping(value = "/depositAmount")
     public ResponseEntity<DepositAmountResponse> depositAmount(@PathParam(value = "amount") Double amount, @PathParam(value = "accountNumber") Long accountNumber) {
-        DepositAmountResponse depositAmountResponse = bankOperationsService.deposit(accountNumber, amount);
+        DepositAmountResponse depositAmountResponse = bankOperationsService.depositAmount(accountNumber, amount);
         HttpStatus httpStatus = depositAmountResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(depositAmountResponse, httpStatus);
     }
@@ -74,7 +74,7 @@ public class BankServiceController {
     //withdraw amount to the given account number
     @PutMapping(value = "/withdrawAmount")
     public ResponseEntity<WithdrawAmountResponse> withdrawAmount(@PathParam(value = "amount") Double amount, @PathParam(value = "accountNumber") Long accountNumber) {
-        WithdrawAmountResponse withdrawAmountResponse = bankOperationsService.withdraw(accountNumber, amount);
+        WithdrawAmountResponse withdrawAmountResponse = bankOperationsService.withdrawAmount(accountNumber, amount);
         HttpStatus httpStatus = withdrawAmountResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(withdrawAmountResponse, httpStatus);
     }

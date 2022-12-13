@@ -21,7 +21,6 @@ public class AccountDto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer accountID;
-
     @NotEmpty(message = "Type of account cannot null")
     private String accountType;
 

@@ -4,16 +4,11 @@ import com.cognologix.bankingApplication.dao.BankAccountRepository;
 import com.cognologix.bankingApplication.dao.CustomerRepository;
 import com.cognologix.bankingApplication.dao.TransactionRepository;
 import com.cognologix.bankingApplication.dto.AccountDto;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.ActivateAccountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.CreatedAccountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivateAccountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivatedAccountsResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.DepositAmountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.TransferAmountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.WithdrawAmountResponse;
+import com.cognologix.bankingApplication.dto.Responses.bankOperations.*;
 import com.cognologix.bankingApplication.entities.Account;
 import com.cognologix.bankingApplication.entities.Customer;
 import com.cognologix.bankingApplication.entities.transactions.BankTransaction;
+import com.cognologix.bankingApplication.exceptions.*;
 import com.cognologix.bankingApplication.services.implementation.BankOperationServiceImplementation;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {BankServiceMockito.class})
@@ -56,126 +52,178 @@ public class BankServiceMockito {
 
     List<Account> accounts = new ArrayList<>();
     BankTransaction transaction = new BankTransaction();
+    Account deactivatedAccount;
+    List<Account> deactivatedAccounts = new ArrayList<>();
 
 
     @Test
     public void testCreateAccount() {
+        try {
+            when(customerRepository.findByCustomerIdEquals(accountDto.getCustomerId())).thenReturn(customer);
+            when(bankAccountRepository.findAll()).thenReturn(accounts);
+            when(bankAccountRepository.save(account)).thenReturn(account);
+            when(bankOperationServiceImplementation.createAccount(accountDto)).thenThrow(Exception.class);
+            CreatedAccountResponse expected = new CreatedAccountResponse(true,
+                    "Account created successfully...", account);
 
-        when(customerRepository.findByCustomerIdEquals(accountDto.getCustomerId())).thenReturn(customer);
-        when(bankAccountRepository.findAll()).thenReturn(accounts);
-        when(bankAccountRepository.save(account)).thenReturn(account);
-        CreatedAccountResponse expected = new CreatedAccountResponse(true,
-                "Account created successfully...", account);
+            CreatedAccountResponse actual = bankOperationServiceImplementation.createAccount(accountDto);
 
-        CreatedAccountResponse actual = bankOperationServiceImplementation.createAccount(accountDto);
-
-        assertEquals(actual, expected);
+            assertEquals(actual, expected);
+        } catch (IllegalTypeOfAccountException exception) {
+            assertTrue(exception instanceof IllegalTypeOfAccountException);
+        } catch (AccountAlreadyExistException exception) {
+            assertTrue(exception instanceof AccountAlreadyExistException);
+        } catch (CustomerNotFoundException exception) {
+            assertTrue(exception instanceof CustomerNotFoundException);
+        } catch (Exception exception) {
+            assertTrue(exception instanceof Exception);
+        }
     }
 
     @Test
     public void testGetAccountByAccountNumber() {
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        Account actual = bankOperationServiceImplementation.getAccountByAccountNumber(account.getAccountNumber());
-        Account expected = account;
-        assertEquals(expected, actual);
+        try {
+            when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
+            when(bankOperationServiceImplementation.getAccountByAccountNumber(1001L)).thenThrow(Exception.class);
+            Account actual = bankOperationServiceImplementation.getAccountByAccountNumber(account.getAccountNumber());
+            Account expected = account;
+            assertEquals(expected, actual);
+        } catch (AccountNotAvailableException exception) {
+            assertTrue(exception instanceof AccountNotAvailableException);
+        }
 
     }
 
     @Test
     public void testDepositAmount() {
-        Double amountToDeposit = 500.00;
-        Double updatedBalance = account.getBalance() + amountToDeposit;
+        try {
+            Double amountToDeposit = 500.00;
+            Double updatedBalance = account.getBalance() + amountToDeposit;
 
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        when(bankAccountRepository.save(account)).thenReturn(account);
-//        when(transactionRepository.save(transaction)).thenReturn(transaction);
+            when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
+            when(bankAccountRepository.save(account)).thenReturn(account);
+            when(bankOperationServiceImplementation.depositAmount(account.getAccountNumber(), amountToDeposit)).thenThrow(Exception.class);
 
-        DepositAmountResponse actual = bankOperationServiceImplementation.deposit(account.getAccountNumber(), amountToDeposit);
+            DepositAmountResponse actual = bankOperationServiceImplementation.depositAmount(account.getAccountNumber(), amountToDeposit);
 
-        DepositAmountResponse expected = new DepositAmountResponse(true,
-                amountToDeposit + " deposited successfully... \nAvailable balance is : " + updatedBalance);
-        assertEquals(expected, actual);
+            DepositAmountResponse expected = new DepositAmountResponse(true,
+                    amountToDeposit + " deposited successfully... \nAvailable balance is : " + updatedBalance);
+            assertEquals(expected, actual);
+        } catch (DeactivateAccountException exception) {
+            assertTrue(exception instanceof DeactivateAccountException);
+        } catch (Exception exception) {
+            assertTrue(exception instanceof Exception);
+        }
     }
 
     @Test
     public void testWithdrawAmount() {
-        Double amountToWithdraw = 500.00;
-        Double updatedBalance = account.getBalance() - amountToWithdraw;
+        try {
+            Double amountToWithdraw = 500.00;
+            Double updatedBalance = account.getBalance() - amountToWithdraw;
 
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        when(bankAccountRepository.save(account)).thenReturn(account);
-        when(transactionRepository.save(transaction)).thenReturn(transaction);
+            when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
+            when(bankAccountRepository.save(account)).thenReturn(account);
+            when(bankOperationServiceImplementation.withdrawAmount(account.getAccountNumber(), amountToWithdraw)).thenThrow(Exception.class);
 
-        WithdrawAmountResponse actual = bankOperationServiceImplementation.withdraw(account.getAccountNumber(), amountToWithdraw);
+            WithdrawAmountResponse actual = bankOperationServiceImplementation.withdrawAmount(account.getAccountNumber(), amountToWithdraw);
 
-        WithdrawAmountResponse expected = new WithdrawAmountResponse(true,
-                amountToWithdraw + " withdraw successfully... \nAvailable balance is : " + updatedBalance);
-        assertEquals(expected, actual);
+            WithdrawAmountResponse expected = new WithdrawAmountResponse(true,
+                    amountToWithdraw + " withdraw successfully... \nAvailable balance is : " + updatedBalance);
+            assertEquals(expected, actual);
+        } catch (DeactivateAccountException exception) {
+            assertTrue(exception instanceof DeactivateAccountException);
+        } catch (InsufficientBalanceException exception) {
+            assertTrue(exception instanceof InsufficientBalanceException);
+        }
     }
 
     @Test
     public void testMoneyTransfer() {
-        Long fromAccount = account.getAccountNumber();
-        Long toAccount = accountForReceiveMoney.getAccountNumber();
-        Double amountForTransfer = 300.00;
-        Double updatedBalance = account.getBalance() - amountForTransfer;
+        try {
+            Long fromAccount = account.getAccountNumber();
+            Long toAccount = accountForReceiveMoney.getAccountNumber();
+            Double amountForTransfer = 300.00;
+            Double updatedBalance = account.getBalance() - amountForTransfer;
 
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        when(bankAccountRepository.save(account)).thenReturn(account);
-        when(bankAccountRepository.findByAccountNumberEquals(accountForReceiveMoney.getAccountNumber())).thenReturn(accountForReceiveMoney);
-        when(bankAccountRepository.save(accountForReceiveMoney)).thenReturn(accountForReceiveMoney);
-//        when(transactionRepository.save(transaction)).thenReturn(transaction);
+            when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
+            when(bankAccountRepository.save(account)).thenReturn(account);
+            when(bankAccountRepository.findByAccountNumberEquals(accountForReceiveMoney.getAccountNumber())).thenReturn(accountForReceiveMoney);
+            when(bankAccountRepository.save(accountForReceiveMoney)).thenReturn(accountForReceiveMoney);
+            when(bankOperationServiceImplementation.moneyTransfer(fromAccount, toAccount, amountForTransfer)).thenThrow(Exception.class);
 
-        TransferAmountResponse expected = bankOperationServiceImplementation.moneyTransfer(fromAccount, toAccount, amountForTransfer);
-        TransferAmountResponse actual = new TransferAmountResponse(true,
-                "Amount " + amountForTransfer + " transferred successfully... \nRemaining balance is " + updatedBalance);
+            TransferAmountResponse expected = bankOperationServiceImplementation.moneyTransfer(fromAccount, toAccount, amountForTransfer);
+            TransferAmountResponse actual = new TransferAmountResponse(true,
+                    "Amount " + amountForTransfer + " transferred successfully... \nRemaining balance is " + updatedBalance);
 
-        assertEquals(expected, actual);
+            assertEquals(expected, actual);
+        } catch (DeactivateAccountException exception) {
+            assertTrue(exception instanceof DeactivateAccountException);
+        } catch (InsufficientBalanceException exception) {
+            assertTrue(exception instanceof InsufficientBalanceException);
+        } catch (Exception exception) {
+            assertTrue(exception instanceof Exception);
+        }
     }
 
     @Test
     public void testActivateAccountByAccountNumber() {
+        try {
+            when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
+            Account activatedAccount = account;
+            activatedAccount.setAccountType("Active");
+            when(bankAccountRepository.save(activatedAccount)).thenReturn(activatedAccount);
+            when(bankOperationServiceImplementation.activateAccountByAccountNumber(account.getAccountNumber())).thenThrow(Exception.class);
+            ActivateAccountResponse actual = bankOperationServiceImplementation.activateAccountByAccountNumber(account.getAccountNumber());
+            ActivateAccountResponse expected = new ActivateAccountResponse(true, "Successfully activated " + activatedAccount.getAccountNumber() + " number account");
 
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        Account activatedAccount = account;
-        activatedAccount.setAccountType("Active");
-        when(bankAccountRepository.save(activatedAccount)).thenReturn(activatedAccount);
-        ActivateAccountResponse actual = bankOperationServiceImplementation.activateAccountByAccountNumber(account.getAccountNumber());
-        ActivateAccountResponse expected = new ActivateAccountResponse(true, "Successfully activated " + activatedAccount.getAccountNumber() + " number account");
-
-        assertEquals(expected, actual);
+            assertEquals(expected, actual);
+        } catch (AccountAlreadyActivatedException exception) {
+            assertTrue(exception instanceof AccountAlreadyActivatedException);
+        } catch (Exception exception) {
+            assertTrue(exception instanceof Exception);
+        }
     }
-
-    Account deactivatedAccount;
-    List<Account> deactivatedAccounts = new ArrayList<>();
 
     @Test
     public void testDeactivateAccountByAccountNumber() {
+        try {
+            when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
+            deactivatedAccount = account;
+            deactivatedAccount.setAccountType("deactivated");
+            when(bankAccountRepository.save(deactivatedAccount)).thenReturn(deactivatedAccount);
+            when(bankOperationServiceImplementation.deactivateAccountByAccountNumber(account.getAccountNumber())).thenThrow(Exception.class);
 
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        deactivatedAccount = account;
-        deactivatedAccount.setAccountType("deactivated");
-        when(bankAccountRepository.save(deactivatedAccount)).thenReturn(deactivatedAccount);
+            DeactivateAccountResponse actual = bankOperationServiceImplementation.deactivateAccountByAccountNumber(account.getAccountNumber());
+            DeactivateAccountResponse expected = new DeactivateAccountResponse(true, "Successfully deactivated " + deactivatedAccount.getAccountNumber() + " number account");
 
-        DeactivateAccountResponse actual = bankOperationServiceImplementation.deactivateAccountByAccountNumber(account.getAccountNumber());
-        DeactivateAccountResponse expected = new DeactivateAccountResponse(true, "Successfully deactivated " + deactivatedAccount.getAccountNumber() + " number account");
-
-        assertEquals(expected, actual);
+            assertEquals(expected, actual);
+        } catch (AccountAlreadyDeactivatedException exception) {
+            assertTrue(exception instanceof AccountAlreadyDeactivatedException);
+        } catch (Exception exception) {
+            assertTrue(exception instanceof Exception);
+        }
     }
 
     @Test
     public void testGetAllDeactivatedAccounts() {
-        deactivatedAccount = account;
-        deactivatedAccount.setAccountType("deactivated");
+        try {
+            deactivatedAccount = account;
+            deactivatedAccount.setAccountType("deactivated");
 
-        //for searching deactivated accounts list
-        deactivatedAccounts.add(deactivatedAccount);
+            //for searching deactivated accounts list
+            deactivatedAccounts.add(deactivatedAccount);
 
-        when(bankAccountRepository.findDeactivatedAccounts()).thenReturn(deactivatedAccounts);
+            when(bankAccountRepository.findDeactivatedAccounts()).thenReturn(deactivatedAccounts);
+            when(bankOperationServiceImplementation.getAllDeactivatedAccounts()).thenThrow(Exception.class);
+            DeactivatedAccountsResponse actual = bankOperationServiceImplementation.getAllDeactivatedAccounts();
+            DeactivatedAccountsResponse expected = new DeactivatedAccountsResponse(true, "Deactivated accounts are...", deactivatedAccounts);
 
-        DeactivatedAccountsResponse actual = bankOperationServiceImplementation.getAllDeactivatedAccounts();
-        DeactivatedAccountsResponse expected = new DeactivatedAccountsResponse(true, "Deactivated accounts are...", deactivatedAccounts);
-
-        assertEquals(expected, actual);
+            assertEquals(expected, actual);
+        } catch (AccountNotAvailableException exception) {
+            assertTrue(exception instanceof AccountNotAvailableException);
+        } catch (Exception exception) {
+            assertTrue(exception instanceof Exception);
+        }
     }
 }

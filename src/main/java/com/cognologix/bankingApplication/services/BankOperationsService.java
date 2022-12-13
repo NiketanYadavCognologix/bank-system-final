@@ -17,9 +17,9 @@ public interface BankOperationsService {
 
     Account getAccountByAccountNumber(Long accountId);
 
-    DepositAmountResponse deposit(Long accountNumber, Double amount);
+    DepositAmountResponse depositAmount(Long accountNumber, Double amount);
 
-    WithdrawAmountResponse withdraw(Long accountNumber, Double amount);
+    WithdrawAmountResponse withdrawAmount(Long accountNumber, Double amount);
 
     TransferAmountResponse moneyTransfer(Long accountNumberWhoSendMoney,Long accountNumberWhoReceiveMoney,Double amountForTransfer);
 

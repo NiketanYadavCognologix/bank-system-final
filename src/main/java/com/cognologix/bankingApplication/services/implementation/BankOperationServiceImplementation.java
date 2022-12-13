@@ -139,7 +139,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
     //deposit amount in given account number
     @Override
-    public DepositAmountResponse deposit(Long accountNumber, Double amount) {
+    public DepositAmountResponse depositAmount(Long accountNumber, Double amount) {
         try {
             Account accountToDeposit = foundedAccount(accountNumber);
 
@@ -168,7 +168,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
             transactionRepository.save(depositTransaction);
             DepositAmountResponse depositAmountResponse = new DepositAmountResponse(true,
-                    amount + " deposited successfully \nAvailable balance is : " + updatedBalance);
+                    amount + " deposited successfully \n Available balance is : " + updatedBalance);
             return depositAmountResponse;
 
         } catch (DeactivateAccountException exception) {
@@ -182,7 +182,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
     //withdraw amount from given account number
     @Override
-    public WithdrawAmountResponse withdraw(Long accountNumber, Double amount) {
+    public WithdrawAmountResponse withdrawAmount(Long accountNumber, Double amount) {
 
         try {
             //JPA method by derived Query to get account by account number
@@ -214,7 +214,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             //update transaction into transaction repository
             transactionRepository.save(depositTransaction);
             WithdrawAmountResponse withdrawAmountResponse = new WithdrawAmountResponse(true,
-                    amount + " withdraw successfully \nAvailable balance is : " + updatedBalance);
+                    amount + " withdraw successfully \n Available balance is : " + updatedBalance);
 
             //thread to avoid conflict
             try {
@@ -231,6 +231,9 @@ public class BankOperationServiceImplementation implements BankOperationsService
         } catch (InsufficientBalanceException exception) {
             exception.printStackTrace();
             throw new InsufficientBalanceException(exception.getMessage());
+        }catch (Exception exception) {
+            exception.printStackTrace();
+            throw new RuntimeException(exception.getMessage());
         }
     }
 
@@ -377,6 +380,9 @@ public class BankOperationServiceImplementation implements BankOperationsService
         } catch (AccountNotAvailableException exception) {
             exception.printStackTrace();
             throw new AccountNotAvailableException(exception.getMessage());
+        }catch (Exception exception) {
+            exception.printStackTrace();
+            throw new RuntimeException(exception.getMessage());
         }
     }
 
