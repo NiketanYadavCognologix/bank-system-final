@@ -1,4 +1,4 @@
-package com.cognologix.bankingApplication.dto.Responses.bankOperations;
+package com.cognologix.bankingApplication.dto.Responses.CustomerOperations;
 
 import com.cognologix.bankingApplication.dto.AccountDto;
 import com.cognologix.bankingApplication.dto.Responses.BaseResponse;
@@ -12,16 +12,15 @@ import java.util.List;
 
 @Getter
 @Setter
-public class DeactivatedAccountsResponse extends BaseResponse {
+public class GetAllAccountsForCustomerResponse extends BaseResponse {
+    List<AccountDto> accountsInResponse=new ArrayList<>();
 
-    private List<AccountDto> deactivatedAccountsResponse=new ArrayList<>();
-
-    public DeactivatedAccountsResponse(Boolean success, String message, List<Account> deactivatedAccounts) {
+    public GetAllAccountsForCustomerResponse(Boolean success, String message, List<Account> accounts) {
         super(success);
         this.setMessage(message);
-        for (Account account : deactivatedAccounts){
+        for (Account account : accounts){
             AccountDto accountDto=new AccountToAccountDto().entityToDto(account);
-            deactivatedAccountsResponse.add(accountDto);
+            accountsInResponse.add(accountDto);
         }
     }
 }

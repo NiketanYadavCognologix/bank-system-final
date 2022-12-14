@@ -2,10 +2,12 @@ package com.cognologix.bankingApplication.services.implementation;
 
 import com.cognologix.bankingApplication.dao.BankAccountRepository;
 import com.cognologix.bankingApplication.dao.CustomerRepository;
-import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.BalanceInquiryResponse;
+import com.cognologix.bankingApplication.dto.CustomerDto;
 import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.CreateCustomerResponse;
 import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.CustomerUpdateResponse;
+import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.GetAllAccountsForCustomerResponse;
 import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.GetAllCustomerResponse;
+import com.cognologix.bankingApplication.dto.dtoToEntity.CustomerDtoToEntity;
 import com.cognologix.bankingApplication.entities.Account;
 import com.cognologix.bankingApplication.entities.Customer;
 import com.cognologix.bankingApplication.exceptions.AccountNotAvailableException;
@@ -15,7 +17,7 @@ import com.cognologix.bankingApplication.services.CustomerOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 public class CustomerOperationServiceImplementation implements CustomerOperationService {
@@ -27,49 +29,25 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
 
     //creating new customer
     @Override
-    public CreateCustomerResponse createNewCustomer(Customer customer) {
+    public CreateCustomerResponse createNewCustomer(CustomerDto customerDto) {
         //if the customer identity element is already exist then throws exception
         try {
-            customerRepository.findAll().stream().forEach(customerFromList -> {
-                if (customerFromList.getAdharNumber().equals(customer.getAdharNumber())) {
-                    throw new CustomerAlreadyExistException("Customer is already exist by same adhar number");
-                } else if (customerFromList.getPanCardNumber().equals(customer.getPanCardNumber())) {
-                    throw new CustomerAlreadyExistException("Customer is already exist by same PanCard number");
-                } else if (customerFromList.getEmailId().equals(customer.getEmailId())) {
-                    throw new CustomerAlreadyExistException("Customer is already exist by same email");
-                }
-            });
+            Customer customer = new CustomerDtoToEntity().dtoToEntity(customerDto);
+            Customer availableCustomer = customerRepository.findByCustomerAdharNumberPanCardNumberEmailId(customer.getAdharNumber(),
+                    customer.getPanCardNumber(), customer.getEmailId());
+            if (null != availableCustomer) {
+                throw new CustomerAlreadyExistException("Customer already exist by AdharNumber,PanCardNumber OR EmailId");
+            }
+
             Customer customerCreated = customerRepository.save(customer);
-            CreateCustomerResponse createAccountResponse = new CreateCustomerResponse(true,
-                    customer.getCustomerName() + " you register successfully."
-                    , customerCreated);
-            return createAccountResponse;
+
+            return new CreateCustomerResponse(true, "Register successfully", customerCreated);
+
         } catch (CustomerAlreadyExistException exception) {
             throw new CustomerAlreadyExistException(exception.getMessage());
         } catch (Exception exception) {
             throw new RuntimeException(exception.getMessage());
         }
-    }
-
-    //get account balance by account number
-    @Override
-    public BalanceInquiryResponse getAccountBalance(Long accountNumber) {
-        try {
-            Account accountAvailable = bankAccountRepository.findByAccountNumberEquals(accountNumber);
-            if (accountAvailable == null) {
-                throw new AccountNotAvailableException("Account not available");
-            }
-            Double availableBalance = bankAccountRepository.findByAccountNumberEquals(accountNumber).getBalance();
-            BalanceInquiryResponse balanceInquiryResponse = new BalanceInquiryResponse(true,
-                    "Hi " + accountAvailable.getCustomer().getCustomerName() + " your account balance is : " + availableBalance);
-            return balanceInquiryResponse;
-        } catch (AccountNotAvailableException exception) {
-            throw new AccountNotAvailableException(exception.getMessage());
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            throw new RuntimeException(exception.getMessage());
-        }
-
     }
 
     //returns all the customers
@@ -79,35 +57,30 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
         return getAllCustomerResponse;
     }
 
+    @Override
+    public GetAllAccountsForCustomerResponse getAllAccountsForACustomer(Integer customerId) {
+        List<Account> matchingAccounts=bankAccountRepository.getAllAccountsForCustomer(customerId);
+        if(matchingAccounts.isEmpty()){
+            throw new AccountNotAvailableException("Account not exist");
+        }
+        return new GetAllAccountsForCustomerResponse(true,"Accounts found",matchingAccounts);
+    }
+
     //update the customer
     @Override
-    public CustomerUpdateResponse updateCustomer(Customer customer) {
+    public CustomerUpdateResponse updateCustomer(CustomerDto customerDto) {
         try {
+            Customer customer = new CustomerDtoToEntity().dtoToEntity(customerDto);
+
             Customer customerFound = customerRepository.findByCustomerIdEquals(customer.getCustomerId());
             if (customerFound == null) {
                 throw new CustomerNotFoundException("Customer not available");
             }
-            customerRepository.findAll().stream()
-                    .filter(customerFromCustomerList -> !customerFromCustomerList.getCustomerId() .equals( customer.getCustomerId()))
-                    .collect(Collectors.toList())
-                    .stream()
-                    .forEach(nonMatchingCustomer -> {
-                        if (nonMatchingCustomer.getAdharNumber().equals(customer.getAdharNumber())) {
-                            throw new CustomerAlreadyExistException("Error : customer you are going to update have adhar number which is already exist\nPlease enter another adhar number");
-                        } else if (nonMatchingCustomer.getPanCardNumber().equals(customer.getPanCardNumber())) {
-                            throw new CustomerAlreadyExistException("Error : customer you are going to update have pan card number which is already exist\nPlease enter another pan number");
-                        } else if (nonMatchingCustomer.getEmailId().equals(customer.getEmailId())) {
-                            throw new CustomerAlreadyExistException("Error : customer you are going to update have same email id which is already exist\nPlease enter another email id");
-                        }
-                    });
 
-            customerRepository.save(customer);
-            CustomerUpdateResponse customerUpdateResponse = new CustomerUpdateResponse(true, customer.getCustomerName()
-                    + " updated successfully");
+            Customer updatedCustomer = customerRepository.save(customer);
+            CustomerUpdateResponse customerUpdateResponse = new CustomerUpdateResponse(true,
+                    "Updated successfully", updatedCustomer);
             return customerUpdateResponse;
-        }catch (CustomerAlreadyExistException exception){
-            exception.printStackTrace();
-            throw new CustomerAlreadyExistException(exception.getMessage());
         }catch (CustomerNotFoundException exception) {
             exception.printStackTrace();
             throw new CustomerNotFoundException(exception.getMessage());

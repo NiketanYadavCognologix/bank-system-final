@@ -13,5 +13,7 @@ public interface BankAccountRepository extends JpaRepository<Account, Integer> {
     @Query(value = "SELECT * FROM account WHERE status='Deactivated' OR status='deactivated'", nativeQuery = true)
     List<Account> findDeactivatedAccounts();
 
+    @Query(value = "SELECT * FROM account WHERE customer_customer_id=?1", nativeQuery = true)
+    List<Account> getAllAccountsForCustomer(Integer customerId);
 
 }

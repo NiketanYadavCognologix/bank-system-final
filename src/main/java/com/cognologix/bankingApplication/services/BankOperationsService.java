@@ -1,6 +1,7 @@
 package com.cognologix.bankingApplication.services;
 
 import com.cognologix.bankingApplication.dto.AccountDto;
+import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.BalanceInquiryResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.ActivateAccountResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.CreatedAccountResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivateAccountResponse;
@@ -22,6 +23,9 @@ public interface BankOperationsService {
     WithdrawAmountResponse withdrawAmount(Long accountNumber, Double amount);
 
     TransferAmountResponse moneyTransfer(Long accountNumberWhoSendMoney,Long accountNumberWhoReceiveMoney,Double amountForTransfer);
+
+    //get account balance by account number
+    BalanceInquiryResponse getAccountBalance(Long accountNumber);
 
     TransactionStatementResponse transactionsOfAccount(Long fromAccountNumber);
 

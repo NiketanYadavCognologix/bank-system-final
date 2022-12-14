@@ -4,6 +4,7 @@ import com.cognologix.bankingApplication.dao.BankAccountRepository;
 import com.cognologix.bankingApplication.dao.CustomerRepository;
 import com.cognologix.bankingApplication.dao.TransactionRepository;
 import com.cognologix.bankingApplication.dto.AccountDto;
+import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.BalanceInquiryResponse;
 import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.TransactionStatementResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.ActivateAccountResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.CreatedAccountResponse;
@@ -13,12 +14,15 @@ import com.cognologix.bankingApplication.dto.Responses.bankOperations.DepositAmo
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.TransferAmountResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.WithdrawAmountResponse;
 import com.cognologix.bankingApplication.dto.TransactionDto;
+import com.cognologix.bankingApplication.dto.entityToDto.TransactionToTransactionDto;
 import com.cognologix.bankingApplication.entities.Account;
 import com.cognologix.bankingApplication.entities.Customer;
 import com.cognologix.bankingApplication.entities.transactions.BankTransaction;
+import com.cognologix.bankingApplication.enums.AccountStatus;
+import com.cognologix.bankingApplication.enums.AccountType;
+import com.cognologix.bankingApplication.enums.Transaction;
 import com.cognologix.bankingApplication.exceptions.AccountAlreadyActivatedException;
 import com.cognologix.bankingApplication.exceptions.AccountAlreadyDeactivatedException;
-import com.cognologix.bankingApplication.exceptions.AccountAlreadyExistException;
 import com.cognologix.bankingApplication.exceptions.AccountNotAvailableException;
 import com.cognologix.bankingApplication.exceptions.CustomerNotFoundException;
 import com.cognologix.bankingApplication.exceptions.DeactivateAccountException;
@@ -31,7 +35,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 //service class for banking operations
 @Service
@@ -51,18 +54,13 @@ public class BankOperationServiceImplementation implements BankOperationsService
     public CreatedAccountResponse createAccount(AccountDto accountDto) {
         //new account
         try {
-            Account accountToSave = new Account();
-
-            accountToSave.setAccountId(accountDto.getAccountID());
-            accountToSave.setStatus("Active");
-            accountToSave.setBalance(accountDto.getBalance());
-            accountToSave.setAccountNumber(generateAccountNumber());
+            String accountType;
 
             //check the account type is proper
-            String accountTypeGivenByCustomer = accountDto.getAccountType();
-            if (accountTypeGivenByCustomer.equalsIgnoreCase("Savings") || accountTypeGivenByCustomer.equalsIgnoreCase("Current")) {
-                accountToSave.setAccountType(accountTypeGivenByCustomer);
-            } else {
+            try {
+                String accountTypeGivenByCustomer = AccountType.valueOf(accountDto.getAccountType().toUpperCase()).toString();
+                accountType = accountTypeGivenByCustomer;
+            } catch (Exception exception) {
                 throw new IllegalTypeOfAccountException("Enter valid account type");
             }
 
@@ -71,32 +69,24 @@ public class BankOperationServiceImplementation implements BankOperationsService
             if (customer == null) {
                 throw new CustomerNotFoundException("Customer not available");
             }
-            accountToSave.setCustomer(customer);
 
-            //check the type account for given customer is already available or not
-            List<Account> matchingAccount = bankAccountRepository.findAll().stream()
-                    .filter(account -> account.getCustomer().getCustomerId().equals(accountDto.getCustomerId()))
-                    .filter(account -> account.getAccountType().equalsIgnoreCase(accountDto.getAccountType()))
-                    .collect(Collectors.toList());
+            Integer accountId = accountDto.getAccountID();
+            String status = AccountStatus.ACTIVATED.toString();
+            Double balance = accountDto.getBalance();
+            Long accountNumber = generateAccountNumber();
 
-            //the matching account will be found then throws exception
-            if (matchingAccount.isEmpty()) {
-                bankAccountRepository.save(accountToSave);
+            Account newAccount = new Account(accountId,status,accountType,accountNumber,balance,customer);
+            bankAccountRepository.save(newAccount);
 
-                //proper response after creating new account
-                CreatedAccountResponse createdAccountResponse = new CreatedAccountResponse(true, "Account created successfully", accountToSave);
+            //proper response after creating new account
+            CreatedAccountResponse createdAccountResponse = new CreatedAccountResponse(true, "Account created successfully", newAccount);
 
-                //return the custom response
-                return createdAccountResponse;
-            } else {
-                throw new AccountAlreadyExistException("Account already exist for you");
-            }
+            //return the custom response
+            return createdAccountResponse;
+
         } catch (IllegalTypeOfAccountException exception) {
             exception.printStackTrace();
             throw new IllegalTypeOfAccountException(exception.getMessage());
-        } catch (AccountAlreadyExistException exception) {
-            exception.printStackTrace();
-            throw new AccountAlreadyExistException(exception.getMessage());
         } catch (CustomerNotFoundException exception) {
             exception.printStackTrace();
             throw new CustomerNotFoundException(exception.getMessage());
@@ -127,7 +117,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
     public Account getAccountByAccountNumber(Long accountNumber) {
         try {
             Account account = foundedAccount(accountNumber);
-            if (account == null) {
+            if (null == account) {
                 throw new AccountNotAvailableException("Account not available");
             }
             return account;
@@ -144,8 +134,8 @@ public class BankOperationServiceImplementation implements BankOperationsService
             Account accountToDeposit = foundedAccount(accountNumber);
 
             //checking account status
-            if (accountToDeposit.getStatus().equalsIgnoreCase("deactivated")) {
-                throw new DeactivateAccountException("Oop's your account id deactivated, please visit your Bank branch");
+            if (accountToDeposit.getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())) {
+                throw new DeactivateAccountException("your account is deactivated");
             }
             Double updatedBalance = accountToDeposit.getBalance() + amount;
             accountToDeposit.setBalance(updatedBalance);
@@ -156,7 +146,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
             depositTransaction.setToAccountNumber(accountNumber);
             depositTransaction.setAmount(amount);
-            depositTransaction.setOperation("Deposited");
+            depositTransaction.setOperation(Transaction.DEPOSIT.name());
             depositTransaction.setDateOfTransaction(LocalDateTime.now());
 
             //thread to avoid conflict
@@ -189,8 +179,8 @@ public class BankOperationServiceImplementation implements BankOperationsService
             Account accountWithdraw = foundedAccount(accountNumber);
 
             //checking account status
-            if (accountWithdraw.getStatus().equalsIgnoreCase("deactivated")) {
-                throw new DeactivateAccountException("Oop's your account id deactivated, please visit your Bank branch");
+            if (accountWithdraw.getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())) {
+                throw new DeactivateAccountException("Deactivated account");
             }
 
             //if the amount for withdraw is more than balance then throws exception
@@ -208,13 +198,13 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
             depositTransaction.setFromAccountNumber(accountNumber);
             depositTransaction.setAmount(amount);
-            depositTransaction.setOperation("Withdraw");
+            depositTransaction.setOperation(Transaction.WITHDRAW.name());
             depositTransaction.setDateOfTransaction(LocalDateTime.now());
 
             //update transaction into transaction repository
             transactionRepository.save(depositTransaction);
             WithdrawAmountResponse withdrawAmountResponse = new WithdrawAmountResponse(true,
-                    amount + " withdraw successfully \n Available balance is : " + updatedBalance);
+                    amount + " withdraw successfully");
 
             //thread to avoid conflict
             try {
@@ -244,8 +234,8 @@ public class BankOperationServiceImplementation implements BankOperationsService
             //JPA method by derived Query to get account by account number
             Account accountWithdraw = foundedAccount(accountNumberWhoSendMoney);
 
-            if (accountWithdraw.getStatus().equalsIgnoreCase("deactivated")) {
-                throw new DeactivateAccountException("Failed to transfer, your account is deactivated\nPlease visit your bank branch");
+            if (accountWithdraw.getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())) {
+                throw new DeactivateAccountException("Failed, your account is deactivated");
             }
             if (accountWithdraw.getBalance() < amountForTransfer) {
                 throw new InsufficientBalanceException("Insufficient balance");
@@ -265,8 +255,8 @@ public class BankOperationServiceImplementation implements BankOperationsService
             Account accountToDeposit = foundedAccount(accountNumberWhoReceiveMoney);
 
             //checking account status
-            if (accountToDeposit.getStatus().equalsIgnoreCase("deactivated")) {
-                throw new DeactivateAccountException("Failed to transfer, receiver account is deactivated ");
+            if (accountToDeposit.getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())) {
+                throw new DeactivateAccountException("Failed, receiver account is deactivated ");
             }
 
             Double updatedBalanceInDeposit = accountToDeposit.getBalance() + amountForTransfer;
@@ -280,14 +270,13 @@ public class BankOperationServiceImplementation implements BankOperationsService
                 exception.printStackTrace();
             }
 
-
             //saving this transaction into transaction repository
             BankTransaction depositTransaction = new BankTransaction();
 
             depositTransaction.setFromAccountNumber(accountNumberWhoSendMoney);
             depositTransaction.setToAccountNumber(accountNumberWhoReceiveMoney);
             depositTransaction.setAmount(amountForTransfer);
-            depositTransaction.setOperation("Transferring from " + accountNumberWhoSendMoney + " to " + accountNumberWhoReceiveMoney);
+            depositTransaction.setOperation((Transaction.TRANSFER.name())+" from " + accountNumberWhoSendMoney + " to " + accountNumberWhoReceiveMoney);
             depositTransaction.setDateOfTransaction(LocalDateTime.now());
             transactionRepository.save(depositTransaction);
 
@@ -306,6 +295,26 @@ public class BankOperationServiceImplementation implements BankOperationsService
         }
     }
 
+    //get account balance by account number
+    @Override
+    public BalanceInquiryResponse getAccountBalance(Long accountNumber) {
+        try {
+            Account accountAvailable = bankAccountRepository.findByAccountNumberEquals(accountNumber);
+            if (accountAvailable == null) {
+                throw new AccountNotAvailableException("Account not available");
+            }
+            Double availableBalance = bankAccountRepository.findByAccountNumberEquals(accountNumber).getBalance();
+            BalanceInquiryResponse balanceInquiryResponse = new BalanceInquiryResponse(true,
+                    "Your account balance is : " + availableBalance);
+            return balanceInquiryResponse;
+        } catch (AccountNotAvailableException exception) {
+            throw new AccountNotAvailableException(exception.getMessage());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new RuntimeException(exception.getMessage());
+        }
+
+    }
     //get list of transaction by account number
     //by native query fetch the transaction of particular account
     @Override
@@ -315,13 +324,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
         //set values in transactionDto to get proper formatted output of transaction
         transactionRepository.findByToAccountNumberEquals(AccountNumber).stream().forEach(transaction -> {
-            TransactionDto transactionDto = new TransactionDto();
-
-            transactionDto.setTransactionId(transaction.getTransactionId());
-            transactionDto.setOperation(transaction.getOperation());
-            transactionDto.setAmount(transaction.getAmount());
-            transactionDto.setDateOfTransaction(transaction.getDateOfTransaction());
-
+            TransactionDto transactionDto=new TransactionToTransactionDto().entityToDto(transaction);
             transactionDtos.add(transactionDto);
         });
         TransactionStatementResponse transactionStatementResponse = new TransactionStatementResponse(true, transactionDtos);
@@ -332,10 +335,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
     public DeactivateAccountResponse deactivateAccountByAccountNumber(Long accountNumber) {
         try {
             Account accountToDeactivate = foundedAccount(accountNumber);
-            if (accountToDeactivate.getStatus().equalsIgnoreCase("deactivated")) {
+            if (accountToDeactivate.getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())) {
                 throw new AccountAlreadyDeactivatedException("Your account is already deactivated");
             }
-            accountToDeactivate.setStatus("deactivated");
+            accountToDeactivate.setStatus(AccountStatus.DEACTIVATED.name());
             bankAccountRepository.save(accountToDeactivate);
             DeactivateAccountResponse deactivateAccountResponse = new DeactivateAccountResponse(true, "Successfully deactivated " + accountNumber + " number account");
             return deactivateAccountResponse;
@@ -351,10 +354,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
     public ActivateAccountResponse activateAccountByAccountNumber(Long accountNumber) {
         try {
             Account accountToDeactivate = foundedAccount(accountNumber);
-            if (accountToDeactivate.getStatus().equalsIgnoreCase("Active")) {
+            if (accountToDeactivate.getStatus().equalsIgnoreCase(AccountStatus.ACTIVATED.name())) {
                 throw new AccountAlreadyActivatedException("Your account is already Activated");
             }
-            accountToDeactivate.setStatus("Active");
+            accountToDeactivate.setStatus(AccountStatus.ACTIVATED.name());
             bankAccountRepository.save(accountToDeactivate);
 
             ActivateAccountResponse activateAccountResponse = new ActivateAccountResponse(true, "Successfully activated " + accountNumber + " number account");

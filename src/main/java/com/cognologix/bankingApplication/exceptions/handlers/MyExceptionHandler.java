@@ -30,6 +30,7 @@ public class MyExceptionHandler {
             AccountAlreadyExistException.class,
                 })
     public ResponseEntity<String> handleIllegalTypeOfAccountException(Exception exception){
+
         return new ResponseEntity<>("Exception : "+exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

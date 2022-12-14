@@ -1,14 +1,15 @@
 package com.cognologix.bankingApplication.services;
 
-import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.BalanceInquiryResponse;
+import com.cognologix.bankingApplication.dto.CustomerDto;
 import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.CreateCustomerResponse;
 import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.CustomerUpdateResponse;
+import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.GetAllAccountsForCustomerResponse;
 import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.GetAllCustomerResponse;
-import com.cognologix.bankingApplication.entities.Customer;
 
 public interface CustomerOperationService {
-    CreateCustomerResponse createNewCustomer(Customer customer);
-    BalanceInquiryResponse getAccountBalance(Long accountNumber);
+    CreateCustomerResponse createNewCustomer(CustomerDto customerDto);
     GetAllCustomerResponse getAllCustomers();
-    CustomerUpdateResponse updateCustomer(Customer customer);
+
+    GetAllAccountsForCustomerResponse getAllAccountsForACustomer(Integer customerId);
+    CustomerUpdateResponse updateCustomer(CustomerDto customerDto);
 }
