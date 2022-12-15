@@ -42,7 +42,7 @@ public class CustomerServiceController {
     }
 
     //get list of BankTransaction details
-    @GetMapping("/statementOfTransaction")
+    @GetMapping("/statement-of-transaction")
     public ResponseEntity<TransactionStatementResponse> getStatementByAccountNumber(@PathParam("accountNumber") Long accountNumber) {
         final TransactionStatementResponse transactionStatementResponse = bankOperationsService.transactionsOfAccount(accountNumber);
         HttpStatus httpStatus = transactionStatementResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
@@ -58,14 +58,14 @@ public class CustomerServiceController {
     }
 
     //returning all customers which is saved in database
-    @GetMapping("/getAllCustomers")
+    @GetMapping("/get-all-customers")
     public ResponseEntity<GetAllCustomerResponse> getAllCustomers() {
         final GetAllCustomerResponse getAllCustomerResponse = customerOperationService.getAllCustomers();
         HttpStatus httpStatus = getAllCustomerResponse.getSuccess() ? HttpStatus.FOUND : HttpStatus.NOT_FOUND;
         return new ResponseEntity<>(getAllCustomerResponse, httpStatus);
     }
 
-    @GetMapping("/getAccounts/{customerId}")
+    @GetMapping("/get-accounts/{customerId}")
     public ResponseEntity<GetAllAccountsForCustomerResponse> getAllAccountsByAdharNumber(@PathVariable Integer customerId){
         GetAllAccountsForCustomerResponse getAllAccountsForCustomer=customerOperationService.getAllAccountsForACustomer(customerId);
         HttpStatus httpStatus = getAllAccountsForCustomer.getSuccess() ? HttpStatus.FOUND : HttpStatus.NOT_FOUND;

@@ -4,6 +4,7 @@ import com.cognologix.bankingApplication.dao.BankAccountRepository;
 import com.cognologix.bankingApplication.dao.CustomerRepository;
 import com.cognologix.bankingApplication.dao.TransactionRepository;
 import com.cognologix.bankingApplication.dto.AccountDto;
+import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.BalanceInquiryResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.ActivateAccountResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.CreatedAccountResponse;
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivateAccountResponse;
@@ -51,17 +52,17 @@ public class BankServiceMockito {
     @InjectMocks
     BankOperationServiceImplementation bankOperationServiceImplementation;
 
-    AccountDto accountDto = new AccountDto(1,
+    AccountDto accountDto = new AccountDto(1L,
             "Savings", 1000.0, 1);
 
     Customer customer = new Customer(1, "Onkar", LocalDate.of(1998, 11, 11),
             "903998989010", "PAN36SURYA", "sury6awanshi@gmail.com", "Male");
 
-    Account account = new Account(accountDto.getAccountID(), "Activate", accountDto.getAccountType(),
-            1000L, accountDto.getBalance(), customer);
+    Account account = new Account (1L,"Activate", accountDto.getAccountType(),
+             accountDto.getBalance(), customer);
 
-    Account accountForReceiveMoney = new Account(2, "Activate", "Current",
-            1001L, 10000.00, customer);
+    Account accountForReceiveMoney = new Account(2L, "Activate", "Current",
+            10000.00, customer);
 
     List<Account> accounts = new ArrayList<>();
     BankTransaction transaction = new BankTransaction();
@@ -139,14 +140,14 @@ public class BankServiceMockito {
 
             when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
             when(bankAccountRepository.save(account)).thenReturn(account);
-            when(bankOperationServiceImplementation.withdrawAmount(account.getAccountNumber(), amountToWithdraw))
-                    .thenThrow(Exception.class);
+//            when(bankOperationServiceImplementation.withdrawAmount(account.getAccountNumber(), amountToWithdraw))
+//                    .thenThrow(Exception.class);
 
             WithdrawAmountResponse actual = bankOperationServiceImplementation.withdrawAmount(account.getAccountNumber(),
                     amountToWithdraw);
 
             WithdrawAmountResponse expected = new WithdrawAmountResponse(true,
-                    amountToWithdraw + " withdraw successfully... \nAvailable balance is : " + updatedBalance);
+                    amountToWithdraw + " withdraw successfully");
             assertEquals(expected, actual);
         } catch (DeactivateAccountException exception) {
             assertTrue(exception instanceof DeactivateAccountException);
@@ -251,4 +252,23 @@ public class BankServiceMockito {
             assertTrue(exception instanceof Exception);
         }
     }
+    @Test
+    void testGetAccountBalance() {
+        try {
+            Long accountNumber = account.getAccountNumber();
+            when(bankAccountRepository.findByAccountNumberEquals(accountNumber)).thenReturn(account);
+            when(bankOperationServiceImplementation.getAccountBalance(accountNumber)).thenThrow(Exception.class);
+
+            BalanceInquiryResponse actual = bankOperationServiceImplementation.getAccountBalance(accountNumber);
+            BalanceInquiryResponse expected = new BalanceInquiryResponse(true, "Hi " +
+                    account.getCustomer().getCustomerName() + " your account balance is : " + account.getBalance());
+
+            assertEquals(expected, actual);
+        } catch (AccountNotAvailableException exception) {
+            assertTrue(exception instanceof AccountNotAvailableException);
+        } catch (Exception exception) {
+            assertTrue(exception instanceof Exception);
+        }
+    }
+
 }

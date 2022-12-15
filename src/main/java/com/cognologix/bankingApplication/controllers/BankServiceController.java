@@ -56,7 +56,7 @@ public class BankServiceController {
     }
 
     //get all deactivated accounts
-    @GetMapping("/getDeactivatingAccounts")
+    @GetMapping("/get-deactivated-accounts")
     public ResponseEntity<DeactivatedAccountsResponse> getListOfDeactivatingAccounts() {
         final DeactivatedAccountsResponse deactivatedAccounts = bankOperationsService.getAllDeactivatedAccounts();
         HttpStatus httpStatus = deactivatedAccounts.getSuccess() ? HttpStatus.FOUND : HttpStatus.NOT_FOUND;

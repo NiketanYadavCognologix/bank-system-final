@@ -14,6 +14,7 @@ public class TransactionStatementResponse extends BaseResponse {
 
     public TransactionStatementResponse(Boolean success, List<TransactionDto> bankTransactions) {
         super(success);
+        this.setMessage("Statement for transactions");
         this.bankTransactions = bankTransactions;
     }
 }

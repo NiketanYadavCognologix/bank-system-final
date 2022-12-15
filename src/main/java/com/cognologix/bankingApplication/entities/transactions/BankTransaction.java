@@ -1,5 +1,6 @@
 package com.cognologix.bankingApplication.entities.transactions;
 
+import com.cognologix.bankingApplication.enums.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,4 +41,27 @@ public class BankTransaction {
     @Column(name = "dateOfTransaction")
     @DateTimeFormat(pattern = "yyyy/MM/dd hh:mm:ss")
     private LocalDateTime dateOfTransaction;
+
+    public BankTransaction(Long toAccountNumber, Double amount) {
+        this.toAccountNumber=toAccountNumber;
+        this.amount=amount;
+        this.operation=Transaction.DEPOSIT.name();
+        this.dateOfTransaction=LocalDateTime.now();
+
+    }
+    public BankTransaction( Double amount,Long fromAccountNumber) {
+        this.fromAccountNumber=fromAccountNumber;
+        this.amount=amount;
+        this.operation= Transaction.WITHDRAW.name();
+        this.dateOfTransaction=LocalDateTime.now();
+
+    }
+
+    public BankTransaction(Long accountNumberWhoSendMoney, Long accountNumberWhoReceiveMoney, Double amountForTransfer) {
+        this.fromAccountNumber=accountNumberWhoSendMoney;
+        this.toAccountNumber=accountNumberWhoReceiveMoney;
+        this.amount=amountForTransfer;
+        this.operation= (Transaction.TRANSFER.name())+" from " + accountNumberWhoSendMoney + " to " + accountNumberWhoReceiveMoney;
+        this.dateOfTransaction=LocalDateTime.now();
+    }
 }

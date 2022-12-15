@@ -20,7 +20,6 @@ import com.cognologix.bankingApplication.entities.Customer;
 import com.cognologix.bankingApplication.entities.transactions.BankTransaction;
 import com.cognologix.bankingApplication.enums.AccountStatus;
 import com.cognologix.bankingApplication.enums.AccountType;
-import com.cognologix.bankingApplication.enums.Transaction;
 import com.cognologix.bankingApplication.exceptions.AccountAlreadyActivatedException;
 import com.cognologix.bankingApplication.exceptions.AccountAlreadyDeactivatedException;
 import com.cognologix.bankingApplication.exceptions.AccountNotAvailableException;
@@ -32,7 +31,6 @@ import com.cognologix.bankingApplication.services.BankOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,12 +68,11 @@ public class BankOperationServiceImplementation implements BankOperationsService
                 throw new CustomerNotFoundException("Customer not available");
             }
 
-            Integer accountId = accountDto.getAccountID();
             String status = AccountStatus.ACTIVATED.toString();
             Double balance = accountDto.getBalance();
             Long accountNumber = generateAccountNumber();
 
-            Account newAccount = new Account(accountId,status,accountType,accountNumber,balance,customer);
+            Account newAccount = new Account(accountNumber, status, accountType, balance, customer);
             bankAccountRepository.save(newAccount);
 
             //proper response after creating new account
@@ -142,12 +139,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             bankAccountRepository.save(accountToDeposit);
 
             //saving this transaction into transaction repository
-            BankTransaction depositTransaction = new BankTransaction();
-
-            depositTransaction.setToAccountNumber(accountNumber);
-            depositTransaction.setAmount(amount);
-            depositTransaction.setOperation(Transaction.DEPOSIT.name());
-            depositTransaction.setDateOfTransaction(LocalDateTime.now());
+            BankTransaction depositTransaction = new BankTransaction(accountNumber, amount);
 
             //thread to avoid conflict
             try {
@@ -194,12 +186,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             bankAccountRepository.save(accountWithdraw);
 
             //saving this transaction of amount into transaction repository
-            BankTransaction depositTransaction = new BankTransaction();
-
-            depositTransaction.setFromAccountNumber(accountNumber);
-            depositTransaction.setAmount(amount);
-            depositTransaction.setOperation(Transaction.WITHDRAW.name());
-            depositTransaction.setDateOfTransaction(LocalDateTime.now());
+            BankTransaction depositTransaction = new BankTransaction(amount, accountNumber);
 
             //update transaction into transaction repository
             transactionRepository.save(depositTransaction);
@@ -271,17 +258,11 @@ public class BankOperationServiceImplementation implements BankOperationsService
             }
 
             //saving this transaction into transaction repository
-            BankTransaction depositTransaction = new BankTransaction();
-
-            depositTransaction.setFromAccountNumber(accountNumberWhoSendMoney);
-            depositTransaction.setToAccountNumber(accountNumberWhoReceiveMoney);
-            depositTransaction.setAmount(amountForTransfer);
-            depositTransaction.setOperation((Transaction.TRANSFER.name())+" from " + accountNumberWhoSendMoney + " to " + accountNumberWhoReceiveMoney);
-            depositTransaction.setDateOfTransaction(LocalDateTime.now());
+            BankTransaction depositTransaction = new BankTransaction(accountNumberWhoSendMoney, accountNumberWhoReceiveMoney, amountForTransfer);
             transactionRepository.save(depositTransaction);
 
             TransferAmountResponse transferAmountResponse = new TransferAmountResponse(true,
-                    "Amount " + amountForTransfer + " transferred successfully\nRemaining balance is " + updatedBalance);
+                    "Amount " + amountForTransfer + " transferred successfully Remaining balance : " + updatedBalance);
             return transferAmountResponse;
         } catch (DeactivateAccountException exception) {
             exception.printStackTrace();
@@ -315,6 +296,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
         }
 
     }
+
     //get list of transaction by account number
     //by native query fetch the transaction of particular account
     @Override
@@ -324,7 +306,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
         //set values in transactionDto to get proper formatted output of transaction
         transactionRepository.findByToAccountNumberEquals(AccountNumber).stream().forEach(transaction -> {
-            TransactionDto transactionDto=new TransactionToTransactionDto().entityToDto(transaction);
+            TransactionDto transactionDto = new TransactionToTransactionDto().entityToDto(transaction);
             transactionDtos.add(transactionDto);
         });
         TransactionStatementResponse transactionStatementResponse = new TransactionStatementResponse(true, transactionDtos);
@@ -336,7 +318,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
         try {
             Account accountToDeactivate = foundedAccount(accountNumber);
             if (accountToDeactivate.getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())) {
-                throw new AccountAlreadyDeactivatedException("Your account is already deactivated");
+                throw new AccountAlreadyDeactivatedException("Already deactivated");
             }
             accountToDeactivate.setStatus(AccountStatus.DEACTIVATED.name());
             bankAccountRepository.save(accountToDeactivate);
@@ -344,8 +326,6 @@ public class BankOperationServiceImplementation implements BankOperationsService
             return deactivateAccountResponse;
         } catch (AccountAlreadyDeactivatedException exception) {
             throw new AccountAlreadyDeactivatedException(exception.getMessage());
-        } catch (Exception exception) {
-            throw new RuntimeException(exception.getMessage());
         }
     }
 
@@ -365,9 +345,6 @@ public class BankOperationServiceImplementation implements BankOperationsService
         } catch (AccountAlreadyActivatedException exception) {
             exception.printStackTrace();
             throw new AccountAlreadyActivatedException(exception.getMessage());
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            throw new RuntimeException(exception.getMessage());
         }
     }
 
