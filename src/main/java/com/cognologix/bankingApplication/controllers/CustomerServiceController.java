@@ -28,10 +28,10 @@ public class CustomerServiceController {
 
     //customer related operations
     @Autowired
-    CustomerOperationService customerOperationService;
+    private CustomerOperationService customerOperationService;
 
     @Autowired
-    BankOperationsService bankOperationsService;
+    private BankOperationsService bankOperationsService;
 
     //create and return created customer by giving parameter to customer
     @PostMapping(value = "/create")

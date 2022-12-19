@@ -29,7 +29,7 @@ public class BankServiceController {
 
     //bank side operations
     @Autowired
-    BankOperationsService bankOperationsService;
+    private BankOperationsService bankOperationsService;
 
     //creating new account by giving account DTO
     @PostMapping(value = "/create")

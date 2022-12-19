@@ -14,4 +14,8 @@ public interface CustomerRepository extends JpaRepository<Customer,Integer>{
             "OR pan_card_number=?2 OR email_id=?3", nativeQuery = true)
     Customer findByCustomerAdharNumberPanCardNumberEmailId(String adharNumber, String panCardNumber, String emailId);
 
+    @Query(value = "SELECT * FROM customer WHERE customer_id !=?1 AND (adhar_number=?2 " +
+            "OR pan_card_number=?3 OR email_id=?4)", nativeQuery = true)
+    Customer findSimilarToAdharNumberPanCardNumberEmailId(Integer customerId, String adharNumber, String panCardNumber, String emailId);
+
 }
