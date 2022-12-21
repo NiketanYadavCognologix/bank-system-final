@@ -24,7 +24,7 @@ import javax.websocket.server.PathParam;
 
 @RestController
 @RequestMapping("/customer")
-public class CustomerServiceController {
+public class CustomerController {
 
     //customer related operations
     @Autowired
@@ -60,7 +60,8 @@ public class CustomerServiceController {
     //returning all customers which is saved in database
     @GetMapping("/get-all-customers")
     public ResponseEntity<GetAllCustomerResponse> getAllCustomers() {
-        final GetAllCustomerResponse getAllCustomerResponse = customerOperationService.getAllCustomers();
+        GetAllCustomerResponse getAllCustomerResponse = customerOperationService.getAllCustomers();
+//        getAllCustomerResponse.setMessage("I am NIKETAN");
         HttpStatus httpStatus = getAllCustomerResponse.getSuccess() ? HttpStatus.FOUND : HttpStatus.NOT_FOUND;
         return new ResponseEntity<>(getAllCustomerResponse, httpStatus);
     }

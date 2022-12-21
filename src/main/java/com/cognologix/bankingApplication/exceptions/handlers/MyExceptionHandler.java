@@ -1,15 +1,7 @@
 package com.cognologix.bankingApplication.exceptions.handlers;
 
-import com.cognologix.bankingApplication.exceptions.AccountAlreadyActivatedException;
-import com.cognologix.bankingApplication.exceptions.AccountAlreadyDeactivatedException;
-import com.cognologix.bankingApplication.exceptions.AccountAlreadyExistException;
-import com.cognologix.bankingApplication.exceptions.AccountNotAvailableException;
-import com.cognologix.bankingApplication.exceptions.CustomerAlreadyExistException;
-import com.cognologix.bankingApplication.exceptions.CustomerNotFoundException;
-import com.cognologix.bankingApplication.exceptions.DeactivateAccountException;
-import com.cognologix.bankingApplication.exceptions.DuplicateCustomerIDException;
-import com.cognologix.bankingApplication.exceptions.IllegalTypeOfAccountException;
-import com.cognologix.bankingApplication.exceptions.InsufficientBalanceException;
+import com.cognologix.bankingApplication.exceptions.*;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,9 +20,10 @@ public class MyExceptionHandler {
             InsufficientBalanceException.class,
             IllegalTypeOfAccountException.class,
             AccountAlreadyExistException.class,
-                })
-    public ResponseEntity<String> handleIllegalTypeOfAccountException(Exception exception){
-
-        return new ResponseEntity<>("Exception : "+exception.getMessage(), HttpStatus.BAD_REQUEST);
+    })
+    public ResponseEntity<JSONObject> handleIllegalTypeOfAccountException(Exception exception) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("Exception : ", exception.getMessage());
+        return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
     }
 }

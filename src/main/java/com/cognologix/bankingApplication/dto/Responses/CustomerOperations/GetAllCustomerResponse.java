@@ -15,4 +15,9 @@ public class GetAllCustomerResponse extends BaseResponse {
         super(success);
         this.customers=customers;
     }
+
+    public GetAllCustomerResponse(){
+        super(true);
+
+    }
 }

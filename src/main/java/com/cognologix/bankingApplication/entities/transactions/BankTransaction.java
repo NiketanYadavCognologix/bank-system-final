@@ -40,20 +40,20 @@ public class BankTransaction {
 
     @Column(name = "dateOfTransaction")
     @DateTimeFormat(pattern = "yyyy/MM/dd hh:mm:ss")
-    private LocalDateTime dateOfTransaction;
+    private String dateOfTransaction;
 
     public BankTransaction(Long toAccountNumber, Double amount) {
         this.toAccountNumber=toAccountNumber;
         this.amount=amount;
         this.operation=Transaction.DEPOSIT.name();
-        this.dateOfTransaction=LocalDateTime.now();
+        this.dateOfTransaction=LocalDateTime.now().toString();
 
     }
     public BankTransaction( Double amount,Long fromAccountNumber) {
         this.fromAccountNumber=fromAccountNumber;
         this.amount=amount;
         this.operation= Transaction.WITHDRAW.name();
-        this.dateOfTransaction=LocalDateTime.now();
+        this.dateOfTransaction=LocalDateTime.now().toString();
 
     }
 
@@ -62,6 +62,6 @@ public class BankTransaction {
         this.toAccountNumber=accountNumberWhoReceiveMoney;
         this.amount=amountForTransfer;
         this.operation= (Transaction.TRANSFER.name())+" from " + accountNumberWhoSendMoney + " to " + accountNumberWhoReceiveMoney;
-        this.dateOfTransaction=LocalDateTime.now();
+        this.dateOfTransaction=LocalDateTime.now().toString();
     }
 }

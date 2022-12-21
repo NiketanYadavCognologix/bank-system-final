@@ -23,4 +23,8 @@ public class GetAllAccountsForCustomerResponse extends BaseResponse {
             accountsInResponse.add(accountDto);
         }
     }
+
+    public GetAllAccountsForCustomerResponse(){
+        super(true);
+    }
 }

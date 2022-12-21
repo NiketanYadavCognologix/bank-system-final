@@ -39,12 +39,12 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
             Customer availableCustomer = customerRepository.findByCustomerAdharNumberPanCardNumberEmailId(customer.getAdharNumber(),
                     customer.getPanCardNumber(), customer.getEmailId());
             if (null != availableCustomer) {
-                throw new CustomerAlreadyExistException(ErrorsForCustomer.customerAlreadyExist.getMessage());
+                throw new CustomerAlreadyExistException(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.getMessage());
             }
 
             Customer customerCreated = customerRepository.save(customer);
 
-            return new CreateCustomerResponse(true, ForCustomer.createCustomer.name(), customerCreated);
+            return new CreateCustomerResponse(true, ForCustomer.CREATE_CUSTOMER.getMessage(), customerCreated);
 
         } catch (CustomerAlreadyExistException exception) {
             exception.printStackTrace();
@@ -66,9 +66,9 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
     public GetAllAccountsForCustomerResponse getAllAccountsForACustomer(Integer customerId) {
         List<Account> matchingAccounts = bankAccountRepository.getAllAccountsForCustomer(customerId);
         if (matchingAccounts.isEmpty()) {
-            throw new AccountNotAvailableException(ErrorsForAccount.accountNotAvailable.getMessage());
+            throw new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.getMessage());
         }
-        return new GetAllAccountsForCustomerResponse(true, ForCustomer.allAccountsForCustomer.name(), matchingAccounts);
+        return new GetAllAccountsForCustomerResponse(true, ForCustomer.ALL_ACCOUNTS_FOR_CUSTOMER.getMessage(), matchingAccounts);
     }
 
     //update the customer
@@ -79,16 +79,16 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
 
             Customer customerFound = customerRepository.findByCustomerIdEquals(customer.getCustomerId());
             if (customerFound == null) {
-                throw new CustomerNotFoundException(ErrorsForCustomer.customerNotFound.getMessage());
+                throw new CustomerNotFoundException(ErrorsForCustomer.CUSTOMER_NOT_FOUND.getMessage());
             }
             Customer existingOtherCustomer = customerRepository.findSimilarToAdharNumberPanCardNumberEmailId(customerDto.getCustomerId(),
                     customerDto.getAdharNumber(), customerDto.getPanCardNumber(), customerDto.getEmailId());
             if (null != existingOtherCustomer) {
-                throw new CustomerAlreadyExistException(ErrorsForCustomer.customerAlreadyExist.getMessage());
+                throw new CustomerAlreadyExistException(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.getMessage());
             }
             Customer updatedCustomer = customerRepository.save(customer);
             CustomerUpdateResponse customerUpdateResponse = new CustomerUpdateResponse(true,
-                    ForCustomer.updateCustomer.name(), updatedCustomer);
+                    ForCustomer.UPDATE_CUSTOMER.getMessage(), updatedCustomer);
             return customerUpdateResponse;
         } catch (CustomerNotFoundException exception) {
             exception.printStackTrace();

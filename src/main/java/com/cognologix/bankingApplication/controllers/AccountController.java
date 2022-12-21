@@ -13,19 +13,14 @@ import com.cognologix.bankingApplication.services.BankOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
 @RestController
 @RequestMapping("/account")
-public class BankServiceController {
+public class AccountController {
 
     //bank side operations
     @Autowired
@@ -64,7 +59,7 @@ public class BankServiceController {
     }
 
     //deposit amount to the given account number
-    @PutMapping(value = "/depositAmount")
+    @PutMapping(value = "/deposit-amount")
     public ResponseEntity<DepositAmountResponse> depositAmount(@PathParam(value = "amount") Double amount, @PathParam(value = "accountNumber") Long accountNumber) {
         final DepositAmountResponse depositAmountResponse = bankOperationsService.depositAmount(accountNumber, amount);
         HttpStatus httpStatus = depositAmountResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
@@ -72,7 +67,7 @@ public class BankServiceController {
     }
 
     //withdraw amount to the given account number
-    @PutMapping(value = "/withdrawAmount")
+    @PutMapping(value = "/withdraw-amount")
     public ResponseEntity<WithdrawAmountResponse> withdrawAmount(@PathParam(value = "amount") Double amount, @PathParam(value = "accountNumber") Long accountNumber) {
         final WithdrawAmountResponse withdrawAmountResponse = bankOperationsService.withdrawAmount(accountNumber, amount);
         HttpStatus httpStatus = withdrawAmountResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
@@ -80,7 +75,7 @@ public class BankServiceController {
     }
 
     //transferring amount from one account to another account
-    @PutMapping("/transferAmount")
+    @PutMapping("/transfer-amount")
     public ResponseEntity<TransferAmountResponse> moneyTransfer(@PathParam(value = "senderAccountNumber") Long senderAccountNumber, @PathParam(value = "receiverAccountNumber") Long receiverAccountNumber, @PathParam(value = "amount") Double amount) {
         final TransferAmountResponse transferAmountResponse = bankOperationsService.moneyTransfer(senderAccountNumber, receiverAccountNumber, amount);
         HttpStatus httpStatus = transferAmountResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
@@ -88,8 +83,8 @@ public class BankServiceController {
     }
 
     //checking balance by giving account number
-    @GetMapping("/balanceInquiry")
-    public ResponseEntity<BalanceInquiryResponse> checkBalance(@Valid @PathParam(value = "accountNumber") Long accountNumber) {
+    @GetMapping("/balance-inquiry")
+    public ResponseEntity<BalanceInquiryResponse> checkBalance(@Valid @RequestParam(value = "accountNumber") Long accountNumber) {
         final BalanceInquiryResponse balanceInquiryResponse = bankOperationsService.getAccountBalance(accountNumber);
         HttpStatus httpStatus = balanceInquiryResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(balanceInquiryResponse, httpStatus);

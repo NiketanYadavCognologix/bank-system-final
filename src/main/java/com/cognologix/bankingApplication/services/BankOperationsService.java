@@ -11,7 +11,9 @@ import com.cognologix.bankingApplication.dto.Responses.bankOperations.TransferAm
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.WithdrawAmountResponse;
 import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.TransactionStatementResponse;
 import com.cognologix.bankingApplication.entities.Account;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface BankOperationsService {
 
     CreatedAccountResponse createAccount(AccountDto accountDto);

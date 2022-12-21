@@ -22,5 +22,5 @@ public class TransactionDto {
     private Double amount;
 
     @DateTimeFormat(pattern = "yyyy/MM/dd hh:mm:ss")
-    private LocalDateTime dateOfTransaction;
+    private String dateOfTransaction;
 }

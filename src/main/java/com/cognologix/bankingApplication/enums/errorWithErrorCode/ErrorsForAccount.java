@@ -3,24 +3,27 @@ package com.cognologix.bankingApplication.enums.errorWithErrorCode;
 public enum ErrorsForAccount {
 
 
-    accountAlreadyActivate(900,"Account already activated"),
+    ACCOUNT_ALREADY_ACTIVATE(900, "Account already activated"),
 
-    accountAlreadyDeactivate(901,"Already deactivated"),
+    ACCOUNT_ALREADY_DEACTIVATE(901, "Already deactivated"),
 
-    accountAlreadyExist(902,"Account already exist"),
+    ACCOUNT_ALREADY_EXIST(902, "Account already exist"),
 
-    accountNotAvailable(903,"Account not available"),
+    ACCOUNT_NOT_AVAILABLE(903, "Account not available"),
 
-    deactivateAccount(904,"Inactive account"),
+    DEACTIVATE_ACCOUNT(904, "Inactive account"),
 
-    illegalTypeOFAccount(905,"Invalid account type"),
+    NO_ANY_DEACTIVATED_ACCOUNT_FOUND(908, "No any deactivated account found"),
 
-    insufficientBalance(906,"Insufficient balance"),
+    ILLEGAL_TYPE_OF_ACCOUNT(905, "Invalid account type"),
 
-    inactiveAmountReceiverAccount(907,"inactive receiver account");
+    INSUFFICIENT_BALANCE(906, "Insufficient balance"),
+
+    INACTIVE_AMOUNT_RECEIVER_ACCOUNT(907, "inactive receiver account");
 
     private final Integer code;
     private final String message;
+
     ErrorsForAccount(Integer code, String message) {
         this.code = code;
         this.message = message;

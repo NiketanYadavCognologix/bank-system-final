@@ -17,4 +17,8 @@ public class TransactionStatementResponse extends BaseResponse {
         this.setMessage("Statement for transactions");
         this.bankTransactions = bankTransactions;
     }
+
+    public TransactionStatementResponse() {
+        super(true);
+    }
 }

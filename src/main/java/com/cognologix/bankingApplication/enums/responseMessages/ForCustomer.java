@@ -1,11 +1,18 @@
 package com.cognologix.bankingApplication.enums.responseMessages;
 
 public enum ForCustomer {
-    createCustomer("Created successfully"),
+    CREATE_CUSTOMER("Created successfully"),
 
-    allAccountsForCustomer("Found accounts "),
-    updateCustomer("Updated successfully");
+    ALL_ACCOUNTS_FOR_CUSTOMER("Found accounts "),
+    UPDATE_CUSTOMER("Updated successfully");
 
-    ForCustomer(String message) {
+
+    private String message;
+    ForCustomer(String message)
+    {
+        this.message=message;
+    }
+    public String getMessage() {
+        return message;
     }
 }

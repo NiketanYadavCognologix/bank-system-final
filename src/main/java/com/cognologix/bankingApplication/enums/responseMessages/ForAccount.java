@@ -1,22 +1,29 @@
 package com.cognologix.bankingApplication.enums.responseMessages;
 
 public enum ForAccount {
-    CreateAccount("Account created successfully"),
+    CREATE_ACCOUNT("Account created successfully"),
 
-    depositAmount(" deposited successfully"),
+    DEPOSIT_AMOUNT(" deposited successfully"),
 
-    withdrawAmount(" withdraw successfully"),
+    WITHDRAW_AMOUNT(" withdraw successfully"),
 
-    transferAmount(" transferred successfully Remaining balance : "),
+    TRANSFER_AMOUNT(" transferred successfully Remaining balance : "),
 
-    availableBalance("Your account balance is : "),
+    AVAILABLE_BALANCE("Your account balance is : "),
 
-    deactivateAccount("Successfully deactivated "),
+    DEACTIVATE_ACCOUNT("Successfully deactivated "),
 
-    activatedAccount("Successfully activated "),
+    ACTIVATED_ACCOUNT("Successfully activated "),
 
-    listOfDeactivatedAccounts("Deactivated accounts are");
-    ForAccount(String message) {
+    LIST_OF_DEACTIVATED_ACCOUNTS("Deactivated accounts are");
+
+    private String message;
+    ForAccount(String message)
+    {
+        this.message=message;
+    }
+    public String getMessage() {
+        return message;
     }
 
 }

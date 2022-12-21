@@ -24,4 +24,8 @@ public class DeactivatedAccountsResponse extends BaseResponse {
             deactivatedAccountsResponse.add(accountDto);
         }
     }
+
+    public DeactivatedAccountsResponse() {
+        super(true);
+    }
 }

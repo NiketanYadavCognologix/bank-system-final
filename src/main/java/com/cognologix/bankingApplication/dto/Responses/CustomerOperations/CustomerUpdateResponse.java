@@ -15,4 +15,8 @@ public class CustomerUpdateResponse extends BaseResponse{
         this.setMessage(message);
         updatedCustomer=customer;
     }
+
+    public CustomerUpdateResponse() {
+        super(true);
+    }
 }

@@ -25,4 +25,7 @@ public class CreatedAccountResponse extends BaseResponse {
         balance=account.getBalance();
     }
 
+    public CreatedAccountResponse() {
+        super(true);
+    }
 }

@@ -32,7 +32,7 @@ public class CustomerDto {
     @Column(name = "dateOfBirth")
     @NotNull(message = "Date of birth cannot blank")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dateOfBirth;
+    private String dateOfBirth;
 
     @Column(name = "adharNumber",unique = true)
     @NotEmpty(message = "Adhar number cannot blank")

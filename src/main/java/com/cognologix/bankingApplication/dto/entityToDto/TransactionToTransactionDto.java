@@ -13,7 +13,7 @@ public class TransactionToTransactionDto {
     private Integer transactionId;
     private String operation;
     private Double amount;
-    private LocalDateTime dateOfTransaction;
+    private String dateOfTransaction;
 
     public TransactionDto entityToDto(BankTransaction bankTransaction){
         TransactionDto transactionDto=new TransactionDto();

@@ -1,11 +1,11 @@
 package com.cognologix.bankingApplication.enums.errorWithErrorCode;
 
 public enum ErrorsForCustomer {
-    customerAlreadyExist(801,"customer already exist by adhar number, pan number OR email id"),
+    CUSTOMER_ALREADY_EXIST(801,"customer already exist by adhar number, pan number OR email id"),
 
-    customerNotFound(802,"customer not found"),
+    CUSTOMER_NOT_FOUND(802,"customer not found"),
 
-    duplicateCustomerId(803,"Duplicate customer id");
+    DUPLICATE_CUSTOMER_ID(803,"Duplicate customer id");
     private final Integer code;
     private final String message;
     ErrorsForCustomer(Integer code, String message) {

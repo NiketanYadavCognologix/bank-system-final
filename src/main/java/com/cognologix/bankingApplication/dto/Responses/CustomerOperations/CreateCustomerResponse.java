@@ -14,4 +14,8 @@ public class CreateCustomerResponse extends BaseResponse {
         this.setMessage(message);
         this.customer=customer;
     }
+
+    public CreateCustomerResponse() {
+        super(true);
+    }
 }

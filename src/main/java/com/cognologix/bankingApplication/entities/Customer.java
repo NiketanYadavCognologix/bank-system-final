@@ -31,7 +31,7 @@ public class Customer {
 
 	@Column(name = "dateOfBirth")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private LocalDate dateOfBirth;
+	private String  dateOfBirth;
 
 	@Column(name = "adharNumber",unique = true)
 	private String adharNumber;
