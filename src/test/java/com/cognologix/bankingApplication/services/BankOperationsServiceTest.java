@@ -26,8 +26,8 @@ import com.cognologix.bankingApplication.exceptions.DeactivateAccountException;
 import com.cognologix.bankingApplication.exceptions.IllegalTypeOfAccountException;
 import com.cognologix.bankingApplication.exceptions.InsufficientBalanceException;
 import com.cognologix.bankingApplication.services.implementation.BankOperationServiceImplementation;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -41,11 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {BankOperationsService.class})
-@RunWith(SpringRunner.class)
+@SpringBootTest
 public class BankOperationsServiceTest {
-
-
     @Mock
     private BankAccountRepository bankAccountRepository;
 
@@ -65,9 +62,6 @@ public class BankOperationsServiceTest {
     Account account = new Account(accountDto.getAccountNumber(), "Activate", accountDto.getAccountType(), accountDto.getBalance(), customer);
 
     Account accountForReceiveMoney = new Account(2L, "Activate", "Cuarrent", 10000.00, customer);
-
-    List<Account> accounts = new ArrayList<>();
-    BankTransaction transaction = new BankTransaction();
     Account deactivatedAccount;
     List<Account> deactivatedAccounts = new ArrayList<>();
 
@@ -76,7 +70,8 @@ public class BankOperationsServiceTest {
     public void testCreateAccount() {
         when(customerRepository.findByCustomerIdEquals(accountDto.getCustomerId())).thenReturn(customer);
         when(bankAccountRepository.save(account)).thenReturn(account);
-        CreatedAccountResponse expected = new CreatedAccountResponse(true, ForAccount.CREATE_ACCOUNT.getMessage(), account);
+        CreatedAccountResponse expected = new CreatedAccountResponse(true,
+                ForAccount.CREATE_ACCOUNT.getMessage(), account);
 
         CreatedAccountResponse actual = bankOperationServiceImplementation.createAccount(accountDto);
         assertEquals(expected, actual);
@@ -89,7 +84,7 @@ public class BankOperationsServiceTest {
 
         when(bankAccountRepository.save(account)).thenThrow(new IllegalTypeOfAccountException(ErrorsForAccount.ILLEGAL_TYPE_OF_ACCOUNT.getMessage()));
         IllegalTypeOfAccountException exception = assertThrows(IllegalTypeOfAccountException.class, () -> bankOperationServiceImplementation.createAccount(accountDto));
-        assertEquals(ErrorsForAccount.ILLEGAL_TYPE_OF_ACCOUNT.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForAccount.ILLEGAL_TYPE_OF_ACCOUNT.toString(), exception.getMessage());
     }
 
     @Test
@@ -120,7 +115,6 @@ public class BankOperationsServiceTest {
     @Test
     public void testDepositAmount() {
         Double amountToDeposit = 500.00;
-        Double updatedBalance = account.getBalance() + amountToDeposit;
 
         when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
         when(bankAccountRepository.save(account)).thenReturn(account);

@@ -10,7 +10,6 @@ import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.GetAll
 import com.cognologix.bankingApplication.dto.dtoToEntity.CustomerDtoToEntity;
 import com.cognologix.bankingApplication.entities.Account;
 import com.cognologix.bankingApplication.entities.Customer;
-import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForAccount;
 import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForCustomer;
 import com.cognologix.bankingApplication.enums.responseMessages.ForCustomer;
 import com.cognologix.bankingApplication.exceptions.AccountNotAvailableException;
@@ -39,7 +38,7 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
             Customer availableCustomer = customerRepository.findByCustomerAdharNumberPanCardNumberEmailId(customer.getAdharNumber(),
                     customer.getPanCardNumber(), customer.getEmailId());
             if (null != availableCustomer) {
-                throw new CustomerAlreadyExistException(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.getMessage());
+                throw new CustomerAlreadyExistException(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.toString());
             }
 
             Customer customerCreated = customerRepository.save(customer);
@@ -47,10 +46,10 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
             return new CreateCustomerResponse(true, ForCustomer.CREATE_CUSTOMER.getMessage(), customerCreated);
 
         } catch (CustomerAlreadyExistException exception) {
-            exception.printStackTrace();
+
             throw new CustomerAlreadyExistException(exception.getMessage());
         } catch (Exception exception) {
-            exception.printStackTrace();
+
             throw new RuntimeException(exception.getMessage());
         }
     }
@@ -66,7 +65,7 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
     public GetAllAccountsForCustomerResponse getAllAccountsForACustomer(Integer customerId) {
         List<Account> matchingAccounts = bankAccountRepository.getAllAccountsForCustomer(customerId);
         if (matchingAccounts.isEmpty()) {
-            throw new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.getMessage());
+            throw new AccountNotAvailableException(ErrorsForCustomer.ACCOUNT_NOT_AVAILABLE.toString());
         }
         return new GetAllAccountsForCustomerResponse(true, ForCustomer.ALL_ACCOUNTS_FOR_CUSTOMER.getMessage(), matchingAccounts);
     }
@@ -79,25 +78,25 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
 
             Customer customerFound = customerRepository.findByCustomerIdEquals(customer.getCustomerId());
             if (customerFound == null) {
-                throw new CustomerNotFoundException(ErrorsForCustomer.CUSTOMER_NOT_FOUND.getMessage());
+                throw new CustomerNotFoundException(ErrorsForCustomer.CUSTOMER_NOT_FOUND.toString());
             }
             Customer existingOtherCustomer = customerRepository.findSimilarToAdharNumberPanCardNumberEmailId(customerDto.getCustomerId(),
                     customerDto.getAdharNumber(), customerDto.getPanCardNumber(), customerDto.getEmailId());
             if (null != existingOtherCustomer) {
-                throw new CustomerAlreadyExistException(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.getMessage());
+                throw new CustomerAlreadyExistException(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.toString());
             }
             Customer updatedCustomer = customerRepository.save(customer);
             CustomerUpdateResponse customerUpdateResponse = new CustomerUpdateResponse(true,
                     ForCustomer.UPDATE_CUSTOMER.getMessage(), updatedCustomer);
             return customerUpdateResponse;
         } catch (CustomerNotFoundException exception) {
-            exception.printStackTrace();
+
             throw new CustomerNotFoundException(exception.getMessage());
         } catch (CustomerAlreadyExistException exception) {
-            exception.printStackTrace();
+
             throw new CustomerAlreadyExistException(exception.getMessage());
         } catch (Exception exception) {
-            exception.printStackTrace();
+
             throw new RuntimeException(exception.getMessage());
         }
     }

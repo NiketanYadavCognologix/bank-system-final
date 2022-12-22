@@ -1,5 +1,8 @@
 package com.cognologix.bankingApplication.enums.errorWithErrorCode;
 
+import lombok.Getter;
+
+@Getter
 public enum ErrorsForAccount {
 
 
@@ -30,11 +33,5 @@ public enum ErrorsForAccount {
 
     }
 
-    public Integer getCode() {
-        return code;
-    }
 
-    public String getMessage() {
-        return message;
-    }
 }
