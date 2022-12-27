@@ -6,14 +6,14 @@ import lombok.Getter;
 @Getter
 public class CustomerNotFoundException extends RuntimeException {
     private Integer code;
-    private String Message;
+//    private String message;
 
     public CustomerNotFoundException() {
     }
 
     public CustomerNotFoundException(String message) {
         super(message);
-        this.Message = message;
-        this.code = ErrorsForCustomer.CUSTOMER_NOT_FOUND.getCode();
+//        this.message = ErrorsForCustomer.valueOf(message).getMessage();
+        this.code = ErrorsForCustomer.valueOf(message).getCode();
     }
 }

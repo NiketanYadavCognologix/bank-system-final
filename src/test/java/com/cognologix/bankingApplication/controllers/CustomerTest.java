@@ -15,6 +15,7 @@ import com.cognologix.bankingApplication.exceptions.AccountNotAvailableException
 import com.cognologix.bankingApplication.exceptions.CustomerAlreadyExistException;
 import com.cognologix.bankingApplication.exceptions.CustomerNotFoundException;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -34,6 +35,7 @@ public class CustomerTest extends AbstractTest {
             "Activate", accountDto.getAccountType(), accountDto.getBalance(), customer);
 
     @Test
+    @DisplayName("get all customers")
     public void getProductsList() throws Exception {
         this.setUp();
         String uri = "/customer/get-all-customers";
@@ -49,6 +51,7 @@ public class CustomerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("get statement of transaction")
     public void testStatementOfTransactions() throws Exception {
         this.setUp();
         String uri = "/customer/statement-of-transaction";
@@ -64,6 +67,7 @@ public class CustomerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("create customer")
     public void testCreateCustomer() throws Exception {
         this.setUp();
 
@@ -87,6 +91,7 @@ public class CustomerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("customer already exist")
     public void testCreateCustomer_CustomerAlreadyExistException() throws Exception {
         this.setUp();
 
@@ -107,6 +112,7 @@ public class CustomerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("update customer")
     public void testUpdateCustomer() throws Exception {
         this.setUp();
         Customer customer = new Customer(3, "Onkar", "11-11-1998",
@@ -127,6 +133,7 @@ public class CustomerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("customer not found to update")
     public void testUpdateCustomer_CustomerNotFoundException() throws Exception {
         this.setUp();
         CustomerDto customerDto = new CustomerDto(19, "Onkar", "11-11-1998",
@@ -142,6 +149,7 @@ public class CustomerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("credentials already exist for other account")
     public void testUpdateCustomer_CustomerAlreadyExistException() throws Exception {
         this.setUp();
         CustomerDto customerDto = new CustomerDto(4, "Onkar", "11-11-1998",
@@ -157,6 +165,7 @@ public class CustomerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("all account for customer")
     public void testGetAllAccountsForCustomer() throws Exception {
         this.setUp();
         String uri = "/customer/get-accounts/1";
@@ -171,6 +180,7 @@ public class CustomerTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("Account not available for given customer")
     public void testGetAllAccountsForCustomer_AccountNotAvailableException() throws Exception {
         this.setUp();
         String uri = "/customer/get-accounts/2";

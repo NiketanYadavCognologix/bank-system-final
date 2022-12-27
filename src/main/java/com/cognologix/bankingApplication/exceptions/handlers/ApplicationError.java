@@ -1,12 +1,8 @@
 package com.cognologix.bankingApplication.exceptions.handlers;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 
 @Data
 public class ApplicationError {

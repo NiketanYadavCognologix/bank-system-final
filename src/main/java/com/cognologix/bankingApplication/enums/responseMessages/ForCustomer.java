@@ -2,7 +2,7 @@ package com.cognologix.bankingApplication.enums.responseMessages;
 
 public enum ForCustomer {
     CREATE_CUSTOMER("Created successfully"),
-
+    STATEMENT("Successfully get bank statement"),
     ALL_ACCOUNTS_FOR_CUSTOMER("Found accounts "),
     UPDATE_CUSTOMER("Updated successfully");
 

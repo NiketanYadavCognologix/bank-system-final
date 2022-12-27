@@ -15,7 +15,13 @@ import com.cognologix.bankingApplication.enums.AccountStatus;
 import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForAccount;
 import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForCustomer;
 import com.cognologix.bankingApplication.enums.responseMessages.ForAccount;
-import com.cognologix.bankingApplication.exceptions.*;
+import com.cognologix.bankingApplication.exceptions.AccountAlreadyActivatedException;
+import com.cognologix.bankingApplication.exceptions.AccountAlreadyDeactivatedException;
+import com.cognologix.bankingApplication.exceptions.AccountNotAvailableException;
+import com.cognologix.bankingApplication.exceptions.CustomerNotFoundException;
+import com.cognologix.bankingApplication.exceptions.DeactivateAccountException;
+import com.cognologix.bankingApplication.exceptions.IllegalTypeOfAccountException;
+import com.cognologix.bankingApplication.exceptions.InsufficientBalanceException;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.http.MediaType;
@@ -45,6 +51,7 @@ public class AccountTest extends AbstractTest {
             "ACTIVATED", accountDto.getAccountType(), accountDto.getBalance(), customer);
 
     @Test
+    @DisplayName("create account")
     public void createAccount() throws Exception {
         this.setUp();
 
@@ -67,6 +74,7 @@ public class AccountTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("customer not found to create account")
     public void testCreateAccount_CustomerNotFoundException() throws Exception {
         this.setUp();
 
@@ -81,6 +89,7 @@ public class AccountTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("account type is not available")
     public void testCreateAccount_IllegalTypeOfAccountException() throws Exception {
         this.setUp();
 
@@ -95,6 +104,7 @@ public class AccountTest extends AbstractTest {
     };
 
     @Test
+    @DisplayName("deactivated account")
     public void testDeactivateAccount() throws Exception {
         this.setUp();
 
@@ -115,6 +125,7 @@ public class AccountTest extends AbstractTest {
         assertEquals(jsonRequest, result);
     }
     @Test
+    @DisplayName("deactivated account is not available")
     public void testDeactivateAccount_AccountNotAvailableException() throws Exception {
         this.setUp();
         String uri = "/account/deactivate";
@@ -126,6 +137,7 @@ public class AccountTest extends AbstractTest {
                 .andExpect(result -> assertEquals(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.toString(),result.getResolvedException().getMessage()));
     }
     @Test
+    @DisplayName("deactivating account is already deactivated")
     public void testDeactivateAccount_AccountAlreadyDeactivatedException() throws Exception {
         this.setUp();
 
@@ -142,6 +154,7 @@ public class AccountTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("get all deactivated accounts")
     public void testGetAllDeactivatedAccounts() throws Exception {
         this.setUp();
         List<Account> deactivateAccounts=new ArrayList<>();
@@ -161,6 +174,7 @@ public class AccountTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("activated account")
     public void testActivateAccount() throws Exception {
         this.setUp();
         String uri = "/account/activate";
@@ -178,6 +192,7 @@ public class AccountTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("account not available for activate account")
     public void testActivateAccount_AccountNotAvailableException() throws Exception {
         this.setUp();
         String uri = "/account/activate";
@@ -189,7 +204,8 @@ public class AccountTest extends AbstractTest {
                 .andExpect(result -> assertEquals(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.toString(),result.getResolvedException().getMessage()));
     }
     @Test
-    public void testActivateAccount_AccountAlreadyDeactivatedException() throws Exception {
+    @DisplayName("account already activated")
+    public void testActivateAccount_AccountAlreadyActivatedException() throws Exception {
         this.setUp();
 
         Account account = new Account(2L,
@@ -205,6 +221,7 @@ public class AccountTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("deposit amount")
     public void testDepositAmount() throws Exception {
         this.setUp();
         String uri = "/account/deposit-amount";
@@ -224,6 +241,7 @@ public class AccountTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("account not available for deposit amount")
     public void testDepositAmount_AccountNotAvailableException() throws Exception {
         this.setUp();
         String uri = "/account/deposit-amount";
@@ -238,6 +256,7 @@ public class AccountTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("deactivated account for deposit amount")
     public void testDepositAmount_DeactivateAccountException() throws Exception {
         this.setUp();
         String uri = "/account/deposit-amount";
@@ -314,16 +333,17 @@ public class AccountTest extends AbstractTest {
                 .andExpect(result -> assertEquals(ErrorsForAccount.INSUFFICIENT_BALANCE.toString(),result.getResolvedException().getMessage()));
     }
     @Test
+    @DisplayName("amount transfer")
     public void testTransferAmount() throws Exception {
         this.setUp();
         String uri = "/account/transfer-amount";
         Double amount=500.00;
         WithdrawAmountResponse expectedResponse = new WithdrawAmountResponse(true,
-                amount+ForAccount.TRANSFER_AMOUNT.getMessage()+26000.0);
+                amount+ForAccount.TRANSFER_AMOUNT.getMessage()+0.0);
         String jsonRequest = mapToJson(expectedResponse);
         MvcResult mvcResult = this.mvc.perform(MockMvcRequestBuilders.put(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .param("senderAccountNumber", mapToJson(1L))
+                        .param("senderAccountNumber", mapToJson(5L))
                         .param("receiverAccountNumber",mapToJson(2L))
                         .param("amount",mapToJson(amount)))
                 .andExpect(status().isOk())
@@ -370,7 +390,7 @@ public class AccountTest extends AbstractTest {
         Double amount=500000.00;
         this.mvc.perform(MockMvcRequestBuilders.put(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .param("senderAccountNumber", mapToJson(3L))
+                        .param("senderAccountNumber", mapToJson(5L))
                         .param("receiverAccountNumber",mapToJson(2L))
                         .param("amount",mapToJson(amount)))
                 .andExpect(status().isBadRequest())
@@ -379,6 +399,7 @@ public class AccountTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("check balance")
     public void testCheckBalance() throws Exception {
         this.setUp();
         String uri = "/account/balance-inquiry";
@@ -398,6 +419,7 @@ public class AccountTest extends AbstractTest {
     }
 
     @Test
+    @DisplayName("account not available for check balance")
     public void testCheckBalance_AccountNotAvailableException() throws Exception {
         this.setUp();
         String uri = "/account/balance-inquiry";

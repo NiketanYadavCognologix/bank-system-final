@@ -23,6 +23,7 @@ import com.cognologix.bankingApplication.enums.AccountType;
 import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForAccount;
 import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForCustomer;
 import com.cognologix.bankingApplication.enums.responseMessages.ForAccount;
+import com.cognologix.bankingApplication.enums.responseMessages.ForCustomer;
 import com.cognologix.bankingApplication.exceptions.AccountAlreadyActivatedException;
 import com.cognologix.bankingApplication.exceptions.AccountAlreadyDeactivatedException;
 import com.cognologix.bankingApplication.exceptions.AccountNotAvailableException;
@@ -31,6 +32,8 @@ import com.cognologix.bankingApplication.exceptions.DeactivateAccountException;
 import com.cognologix.bankingApplication.exceptions.IllegalTypeOfAccountException;
 import com.cognologix.bankingApplication.exceptions.InsufficientBalanceException;
 import com.cognologix.bankingApplication.services.BankOperationsService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +44,8 @@ import java.util.List;
 @Service
 public class BankOperationServiceImplementation implements BankOperationsService {
 
+    private static final Logger
+            LOGGER = LogManager.getLogger(BankOperationServiceImplementation.class);
     @Autowired
     private BankAccountRepository bankAccountRepository;
 
@@ -80,17 +85,19 @@ public class BankOperationServiceImplementation implements BankOperationsService
             //proper response after creating new account
             CreatedAccountResponse createdAccountResponse = new CreatedAccountResponse(true, ForAccount.CREATE_ACCOUNT.getMessage(), newAccount);
 
+            LOGGER.info(ForAccount.CREATE_ACCOUNT.getMessage());
+
             //return the custom response
             return createdAccountResponse;
 
         } catch (IllegalTypeOfAccountException exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new IllegalTypeOfAccountException(exception.getMessage());
         } catch (CustomerNotFoundException exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new CustomerNotFoundException(exception.getMessage());
         } catch (Exception exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
     }
@@ -116,16 +123,17 @@ public class BankOperationServiceImplementation implements BankOperationsService
             try {
                 Thread.sleep(100);
             } catch (Exception exception) {
-
+                exception.printStackTrace();
             }
 
             transactionRepository.save(depositTransaction);
             DepositAmountResponse depositAmountResponse = new DepositAmountResponse(true,
                     amount + ForAccount.DEPOSIT_AMOUNT.getMessage());
+            LOGGER.info(amount + ForAccount.DEPOSIT_AMOUNT.getMessage());
             return depositAmountResponse;
 
         } catch (DeactivateAccountException exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new DeactivateAccountException(exception.getMessage());
         }
     }
@@ -165,16 +173,17 @@ public class BankOperationServiceImplementation implements BankOperationsService
             try {
                 Thread.sleep(100);
             } catch (Exception exception) {
-
+                exception.printStackTrace();
             }
+            LOGGER.info(amount + ForAccount.WITHDRAW_AMOUNT.getMessage());
 
             return withdrawAmountResponse;
 
         } catch (DeactivateAccountException exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new DeactivateAccountException(exception.getMessage());
         } catch (InsufficientBalanceException exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new InsufficientBalanceException(exception.getMessage());
         }
     }
@@ -200,7 +209,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             try {
                 Thread.sleep(100);
             } catch (Exception exception) {
-
+                exception.printStackTrace();
             }
 
             //JPA method by derived Query to get account by account number
@@ -219,7 +228,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             try {
                 Thread.sleep(100);
             } catch (Exception exception) {
-
+                exception.printStackTrace();
             }
 
             //saving this transaction into transaction repository
@@ -228,12 +237,14 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
             TransferAmountResponse transferAmountResponse = new TransferAmountResponse(true,
                     amountForTransfer + ForAccount.TRANSFER_AMOUNT.getMessage() + updatedBalance);
+
+            LOGGER.info(amountForTransfer + ForAccount.TRANSFER_AMOUNT.getMessage() + updatedBalance);
             return transferAmountResponse;
         } catch (DeactivateAccountException exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new DeactivateAccountException(exception.getMessage());
         } catch (InsufficientBalanceException exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new InsufficientBalanceException(exception.getMessage());
         }
     }
@@ -249,11 +260,13 @@ public class BankOperationServiceImplementation implements BankOperationsService
             Double availableBalance = bankAccountRepository.findByAccountNumberEquals(accountNumber).getBalance();
             BalanceInquiryResponse balanceInquiryResponse = new BalanceInquiryResponse(true,
                     ForAccount.AVAILABLE_BALANCE.getMessage() + availableBalance);
+            LOGGER.info(ForAccount.AVAILABLE_BALANCE.getMessage() + availableBalance);
             return balanceInquiryResponse;
         } catch (AccountNotAvailableException exception) {
+            LOGGER.warn(exception.getMessage());
             throw new AccountNotAvailableException(exception.getMessage());
         } catch (Exception exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
 
@@ -272,6 +285,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             transactionDtos.add(transactionDto);
         });
         TransactionStatementResponse transactionStatementResponse = new TransactionStatementResponse(true, transactionDtos);
+        LOGGER.info(ForCustomer.STATEMENT.getMessage());
         return transactionStatementResponse;
     }
 
@@ -285,8 +299,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
             accountToDeactivate.setStatus(AccountStatus.DEACTIVATED.name());
             bankAccountRepository.save(accountToDeactivate);
             DeactivateAccountResponse deactivateAccountResponse = new DeactivateAccountResponse(true, ForAccount.DEACTIVATE_ACCOUNT.getMessage());
+            LOGGER.info(ForAccount.DEACTIVATE_ACCOUNT.getMessage());
             return deactivateAccountResponse;
         } catch (AccountAlreadyDeactivatedException exception) {
+            LOGGER.warn(exception.getMessage());
             throw new AccountAlreadyDeactivatedException(exception.getMessage());
         }
     }
@@ -303,9 +319,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
             bankAccountRepository.save(accountToDeactivate);
 
             ActivateAccountResponse activateAccountResponse = new ActivateAccountResponse(true, ForAccount.ACTIVATED_ACCOUNT.getMessage());
+            LOGGER.info(ForAccount.ACTIVATED_ACCOUNT.getMessage());
             return activateAccountResponse;
         } catch (AccountAlreadyActivatedException exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new AccountAlreadyActivatedException(exception.getMessage());
         }
     }
@@ -320,10 +337,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
             DeactivatedAccountsResponse deactivatedAccountsResponse = new DeactivatedAccountsResponse(true, ForAccount.LIST_OF_DEACTIVATED_ACCOUNTS.getMessage(), deactivatedAccounts);
             return deactivatedAccountsResponse;
         } catch (AccountNotAvailableException exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new AccountNotAvailableException(exception.getMessage());
         } catch (Exception exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
     }
@@ -336,7 +353,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             }
             return foundedAccount;
         } catch (AccountNotAvailableException exception) {
-
+            LOGGER.warn(exception.getMessage());
             throw new AccountNotAvailableException(exception.getMessage());
         }
     }

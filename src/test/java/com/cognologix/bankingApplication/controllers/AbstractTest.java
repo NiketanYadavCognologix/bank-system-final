@@ -23,16 +23,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class AbstractTest {
     public MockMvc mvc;
     @Autowired
-    WebApplicationContext webApplicationContext;
+     private WebApplicationContext webApplicationContext;
 
     public void setUp() {
         this.mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
-    protected String mapToJson(Object obj) throws JsonProcessingException {
+    public String mapToJson(Object obj) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(obj);
     }
-    protected <T> T mapFromJson(String json, Class<T> clazz)
+    public  <T> T mapFromJson(String json, Class<T> clazz)
             throws JsonParseException, JsonMappingException, IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
