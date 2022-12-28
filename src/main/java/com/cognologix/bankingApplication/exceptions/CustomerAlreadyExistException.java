@@ -6,14 +6,18 @@ import lombok.Getter;
 @Getter
 public class CustomerAlreadyExistException extends RuntimeException {
     private Integer code;
-    private String Message;
+    private ErrorsForCustomer customerAlreadyExist;
 
     public CustomerAlreadyExistException() {
     }
 
     public CustomerAlreadyExistException(String message) {
         super(message);
-        this.Message = message;
-        this.code = ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.getCode();
+    }
+
+    public CustomerAlreadyExistException(ErrorsForCustomer customerAlreadyExist) {
+        super(customerAlreadyExist.toString());
+        this.code = customerAlreadyExist.getCode();
+        this.customerAlreadyExist = customerAlreadyExist;
     }
 }

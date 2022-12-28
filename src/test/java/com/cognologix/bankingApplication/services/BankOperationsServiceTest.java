@@ -14,7 +14,6 @@ import com.cognologix.bankingApplication.dto.Responses.bankOperations.TransferAm
 import com.cognologix.bankingApplication.dto.Responses.bankOperations.WithdrawAmountResponse;
 import com.cognologix.bankingApplication.entities.Account;
 import com.cognologix.bankingApplication.entities.Customer;
-import com.cognologix.bankingApplication.entities.transactions.BankTransaction;
 import com.cognologix.bankingApplication.enums.AccountStatus;
 import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForAccount;
 import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForCustomer;
@@ -28,11 +27,9 @@ import com.cognologix.bankingApplication.exceptions.InsufficientBalanceException
 import com.cognologix.bankingApplication.services.implementation.BankOperationServiceImplementation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,9 +87,9 @@ public class BankOperationsServiceTest {
     @Test
     public void test_createAccount_CustomerNotFoundException() {
         accountDto = new AccountDto(null, "Savings", 1000.0, 33);
-        when(customerRepository.findByCustomerIdEquals(accountDto.getCustomerId())).thenThrow(new CustomerNotFoundException(ErrorsForCustomer.CUSTOMER_NOT_FOUND.getMessage()));
+        when(customerRepository.findByCustomerIdEquals(accountDto.getCustomerId())).thenThrow(new CustomerNotFoundException(ErrorsForCustomer.CUSTOMER_NOT_FOUND.toString()));
         CustomerNotFoundException exception = assertThrows(CustomerNotFoundException.class, () -> bankOperationServiceImplementation.createAccount(accountDto));
-        assertEquals(ErrorsForCustomer.CUSTOMER_NOT_FOUND.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForCustomer.CUSTOMER_NOT_FOUND.toString(), exception.getMessage());
 
     }
 
@@ -238,7 +235,7 @@ public class BankOperationsServiceTest {
         when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).equals(AccountStatus.ACTIVATED)).thenThrow(new AccountAlreadyActivatedException(ErrorsForAccount.ACCOUNT_ALREADY_ACTIVATE.getMessage()));
         AccountAlreadyActivatedException exception = assertThrows(AccountAlreadyActivatedException.class, () -> bankOperationServiceImplementation.activateAccountByAccountNumber(account.getAccountNumber()));
 
-        assertEquals(ErrorsForAccount.ACCOUNT_ALREADY_ACTIVATE.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForAccount.ACCOUNT_ALREADY_ACTIVATE.getMessage(), exception.getError());
     }
 
     @Test

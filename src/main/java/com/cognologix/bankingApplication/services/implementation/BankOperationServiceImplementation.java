@@ -67,13 +67,13 @@ public class BankOperationServiceImplementation implements BankOperationsService
                 String accountTypeGivenByCustomer = AccountType.valueOf(accountDto.getAccountType().toUpperCase()).toString();
                 accountType = accountTypeGivenByCustomer;
             } catch (Exception exception) {
-                throw new IllegalTypeOfAccountException(ErrorsForAccount.ILLEGAL_TYPE_OF_ACCOUNT.toString());
+                throw new IllegalTypeOfAccountException(ErrorsForAccount.ILLEGAL_TYPE_OF_ACCOUNT);
             }
 
             //adding information from AccountDTO in account
             Customer customer = customerRepository.findByCustomerIdEquals(accountDto.getCustomerId());
             if (customer == null) {
-                throw new CustomerNotFoundException(ErrorsForCustomer.CUSTOMER_NOT_FOUND.toString());
+                throw new CustomerNotFoundException(ErrorsForCustomer.CUSTOMER_NOT_FOUND);
             }
 
             String status = AccountStatus.ACTIVATED.toString();
@@ -91,10 +91,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
             return createdAccountResponse;
 
         } catch (IllegalTypeOfAccountException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.warn(exception.getIllegalTypeOfAccount().getMessage());
             throw new IllegalTypeOfAccountException(exception.getMessage());
         } catch (CustomerNotFoundException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.warn(exception.getCustomerNotFound().getMessage());
             throw new CustomerNotFoundException(exception.getMessage());
         } catch (Exception exception) {
             LOGGER.warn(exception.getMessage());
@@ -110,7 +110,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
             //checking account status
             if (accountToDeposit.getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())) {
-                throw new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT.toString());
+                throw new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT);
             }
             Double updatedBalance = accountToDeposit.getBalance() + amount;
             accountToDeposit.setBalance(updatedBalance);
@@ -148,12 +148,12 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
             //checking account status
             if (accountWithdraw.getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())) {
-                throw new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT.toString());
+                throw new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT);
             }
 
             //if the amount for withdraw is more than balance then throws exception
             if (accountWithdraw.getBalance() < amount) {
-                throw new InsufficientBalanceException(ErrorsForAccount.INSUFFICIENT_BALANCE.toString());
+                throw new InsufficientBalanceException(ErrorsForAccount.INSUFFICIENT_BALANCE);
             }
             Double updatedBalance = accountWithdraw.getBalance() - amount;
             accountWithdraw.setBalance(updatedBalance);
@@ -196,10 +196,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
             Account accountWithdraw = getAccountByAccountNumber(accountNumberWhoSendMoney);
 
             if (accountWithdraw.getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())) {
-                throw new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT.toString());
+                throw new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT);
             }
             if (accountWithdraw.getBalance() < amountForTransfer) {
-                throw new InsufficientBalanceException(ErrorsForAccount.INSUFFICIENT_BALANCE.toString());
+                throw new InsufficientBalanceException(ErrorsForAccount.INSUFFICIENT_BALANCE);
             }
             Double updatedBalance = accountWithdraw.getBalance() - amountForTransfer;
             accountWithdraw.setBalance(updatedBalance);
@@ -217,7 +217,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
 
             //checking account status
             if (accountToDeposit.getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())) {
-                throw new DeactivateAccountException(ErrorsForAccount.INACTIVE_AMOUNT_RECEIVER_ACCOUNT.toString());
+                throw new DeactivateAccountException(ErrorsForAccount.INACTIVE_AMOUNT_RECEIVER_ACCOUNT);
             }
 
             Double updatedBalanceInDeposit = accountToDeposit.getBalance() + amountForTransfer;
@@ -255,7 +255,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
         try {
             Account accountAvailable = bankAccountRepository.findByAccountNumberEquals(accountNumber);
             if (accountAvailable == null) {
-                throw new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.toString());
+                throw new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE);
             }
             Double availableBalance = bankAccountRepository.findByAccountNumberEquals(accountNumber).getBalance();
             BalanceInquiryResponse balanceInquiryResponse = new BalanceInquiryResponse(true,
@@ -294,7 +294,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
         try {
             Account accountToDeactivate = getAccountByAccountNumber(accountNumber);
             if (accountToDeactivate.getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())) {
-                throw new AccountAlreadyDeactivatedException(ErrorsForAccount.ACCOUNT_ALREADY_DEACTIVATE.toString());
+                throw new AccountAlreadyDeactivatedException(ErrorsForAccount.ACCOUNT_ALREADY_DEACTIVATE);
             }
             accountToDeactivate.setStatus(AccountStatus.DEACTIVATED.name());
             bankAccountRepository.save(accountToDeactivate);
@@ -302,7 +302,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             LOGGER.info(ForAccount.DEACTIVATE_ACCOUNT.getMessage());
             return deactivateAccountResponse;
         } catch (AccountAlreadyDeactivatedException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.warn(exception.getAccountAlreadyDeactivate().getMessage());
             throw new AccountAlreadyDeactivatedException(exception.getMessage());
         }
     }
@@ -313,7 +313,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
         try {
             Account accountToDeactivate = getAccountByAccountNumber(accountNumber);
             if (accountToDeactivate.getStatus().equalsIgnoreCase(AccountStatus.ACTIVATED.name())) {
-                throw new AccountAlreadyActivatedException(ErrorsForAccount.ACCOUNT_ALREADY_ACTIVATE.toString());
+                throw new AccountAlreadyActivatedException(ErrorsForAccount.ACCOUNT_ALREADY_ACTIVATE);
             }
             accountToDeactivate.setStatus(AccountStatus.ACTIVATED.name());
             bankAccountRepository.save(accountToDeactivate);
@@ -322,7 +322,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             LOGGER.info(ForAccount.ACTIVATED_ACCOUNT.getMessage());
             return activateAccountResponse;
         } catch (AccountAlreadyActivatedException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.warn(exception.getAccountAlreadyActivate().getMessage());
             throw new AccountAlreadyActivatedException(exception.getMessage());
         }
     }
@@ -332,7 +332,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
         try {
             List<Account> deactivatedAccounts = bankAccountRepository.findDeactivatedAccounts();
             if (deactivatedAccounts.isEmpty()) {
-                throw new AccountNotAvailableException(ErrorsForAccount.NO_ANY_DEACTIVATED_ACCOUNT_FOUND.toString());
+                throw new AccountNotAvailableException(ErrorsForAccount.NO_ANY_DEACTIVATED_ACCOUNT_FOUND);
             }
             DeactivatedAccountsResponse deactivatedAccountsResponse = new DeactivatedAccountsResponse(true, ForAccount.LIST_OF_DEACTIVATED_ACCOUNTS.getMessage(), deactivatedAccounts);
             return deactivatedAccountsResponse;
@@ -349,7 +349,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
         try {
             Account foundedAccount = bankAccountRepository.findByAccountNumberEquals(accountNumber);
             if (foundedAccount == null) {
-                throw new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.toString());
+                throw new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE);
             }
             return foundedAccount;
         } catch (AccountNotAvailableException exception) {

@@ -6,15 +6,18 @@ import lombok.Getter;
 @Getter
 public class AccountAlreadyDeactivatedException extends RuntimeException {
     private Integer code;
-    private String Message;
+    private ErrorsForAccount accountAlreadyDeactivate;
 
     public AccountAlreadyDeactivatedException() {
     }
 
     public AccountAlreadyDeactivatedException(String message) {
         super(message);
-        this.Message = message;
-        this.code = ErrorsForAccount.ACCOUNT_ALREADY_DEACTIVATE.getCode();
+    }
 
+    public AccountAlreadyDeactivatedException(ErrorsForAccount accountAlreadyDeactivate) {
+        super(accountAlreadyDeactivate.toString());
+        this.code = accountAlreadyDeactivate.getCode();
+        this.accountAlreadyDeactivate = accountAlreadyDeactivate;
     }
 }

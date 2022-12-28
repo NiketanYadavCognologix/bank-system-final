@@ -42,7 +42,7 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
             Customer availableCustomer = customerRepository.findByCustomerAdharNumberPanCardNumberEmailId(customer.getAdharNumber(),
                     customer.getPanCardNumber(), customer.getEmailId());
             if (null != availableCustomer) {
-                throw new CustomerAlreadyExistException(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.toString());
+                throw new CustomerAlreadyExistException(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST);
             }
 
             Customer customerCreated = customerRepository.save(customer);
@@ -69,7 +69,7 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
     public GetAllAccountsForCustomerResponse getAllAccountsForACustomer(Integer customerId) {
         List<Account> matchingAccounts = bankAccountRepository.getAllAccountsForCustomer(customerId);
         if (matchingAccounts.isEmpty()) {
-            throw new AccountNotAvailableException(ErrorsForCustomer.ACCOUNT_NOT_AVAILABLE.toString());
+            throw new AccountNotAvailableException(ErrorsForCustomer.ACCOUNT_NOT_AVAILABLE);
         }
         LOGGER.info(ForCustomer.ALL_ACCOUNTS_FOR_CUSTOMER.getMessage());
         return new GetAllAccountsForCustomerResponse(true, ForCustomer.ALL_ACCOUNTS_FOR_CUSTOMER.getMessage(), matchingAccounts);
@@ -83,12 +83,12 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
 
             Customer customerFound = customerRepository.findByCustomerIdEquals(customer.getCustomerId());
             if (customerFound == null) {
-                throw new CustomerNotFoundException(ErrorsForCustomer.CUSTOMER_NOT_FOUND.toString());
+                throw new CustomerNotFoundException(ErrorsForCustomer.CUSTOMER_NOT_FOUND);
             }
             Customer existingOtherCustomer = customerRepository.findSimilarToAdharNumberPanCardNumberEmailId(customerDto.getCustomerId(),
                     customerDto.getAdharNumber(), customerDto.getPanCardNumber(), customerDto.getEmailId());
             if (null != existingOtherCustomer) {
-                throw new CustomerAlreadyExistException(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.toString());
+                throw new CustomerAlreadyExistException(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST);
             }
             Customer updatedCustomer = customerRepository.save(customer);
             CustomerUpdateResponse customerUpdateResponse = new CustomerUpdateResponse(true,

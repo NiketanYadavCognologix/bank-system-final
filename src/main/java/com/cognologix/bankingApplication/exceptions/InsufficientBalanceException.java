@@ -8,12 +8,18 @@ public class InsufficientBalanceException extends RuntimeException {
     private Integer code;
     private String Message;
 
+    private ErrorsForAccount errorsForAccount;
     public InsufficientBalanceException() {
     }
 
     public InsufficientBalanceException(String message) {
         super(message);
-        this.Message = message;
         this.code = ErrorsForAccount.INSUFFICIENT_BALANCE.getCode();
+    }
+
+    public InsufficientBalanceException(ErrorsForAccount insufficientBalance) {
+        super(insufficientBalance.getMessage());
+        this.Message = insufficientBalance.getMessage();
+        this.errorsForAccount=insufficientBalance;
     }
 }

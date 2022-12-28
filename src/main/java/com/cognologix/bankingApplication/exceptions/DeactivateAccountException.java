@@ -6,14 +6,18 @@ import lombok.Getter;
 @Getter
 public class DeactivateAccountException extends RuntimeException {
     private Integer code;
-    private String Message;
+    private ErrorsForAccount deactivateAccount;
 
     public DeactivateAccountException() {
     }
 
     public DeactivateAccountException(String message) {
         super(message);
-        this.Message = message;
-        this.code = ErrorsForAccount.DEACTIVATE_ACCOUNT.getCode();
+    }
+
+    public DeactivateAccountException(ErrorsForAccount deactivateAccount) {
+        super(deactivateAccount.toString());
+        this.code = deactivateAccount.getCode();
+        this.deactivateAccount = deactivateAccount;
     }
 }

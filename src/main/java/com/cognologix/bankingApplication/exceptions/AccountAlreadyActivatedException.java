@@ -7,17 +7,18 @@ import lombok.Getter;
 public class AccountAlreadyActivatedException extends RuntimeException {
 
     private Integer code;
-    private String Message;
+    ErrorsForAccount accountAlreadyActivate;
 
     public AccountAlreadyActivatedException() {
     }
 
     public AccountAlreadyActivatedException(String message) {
         super(message);
-        this.Message = message;
-        this.code = ErrorsForAccount.ACCOUNT_ALREADY_ACTIVATE.getCode();
-
-
     }
 
+    public AccountAlreadyActivatedException(ErrorsForAccount accountAlreadyActivate) {
+        super(accountAlreadyActivate.toString());
+        this.code = accountAlreadyActivate.getCode();
+        this.accountAlreadyActivate = accountAlreadyActivate;
+    }
 }

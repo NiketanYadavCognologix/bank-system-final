@@ -1,19 +1,24 @@
 package com.cognologix.bankingApplication.exceptions;
 
+import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForAccount;
 import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForCustomer;
 import lombok.Getter;
 
 @Getter
 public class IllegalTypeOfAccountException extends RuntimeException {
     private Integer code;
-    private String Message;
 
+    private ErrorsForAccount illegalTypeOfAccount;
     public IllegalTypeOfAccountException() {
     }
 
     public IllegalTypeOfAccountException(String message) {
         super(message);
-        this.Message = message;
-        this.code = ErrorsForCustomer.DUPLICATE_CUSTOMER_ID.getCode();
+    }
+
+    public IllegalTypeOfAccountException(ErrorsForAccount illegalTypeOfAccount) {
+        super(illegalTypeOfAccount.toString());
+        this.code = illegalTypeOfAccount.getCode();
+        this.illegalTypeOfAccount=illegalTypeOfAccount;
     }
 }

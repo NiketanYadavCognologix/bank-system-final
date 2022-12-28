@@ -6,14 +6,18 @@ import lombok.Getter;
 @Getter
 public class AccountAlreadyExistException extends RuntimeException {
     private Integer code;
-    private String Message;
+    private ErrorsForAccount accountAlreadyExist;
 
     public AccountAlreadyExistException() {
     }
 
     public AccountAlreadyExistException(String message) {
         super(message);
-        this.Message = message;
-        this.code = ErrorsForAccount.ACCOUNT_ALREADY_EXIST.getCode();
+    }
+
+    public AccountAlreadyExistException(ErrorsForAccount accountAlreadyExist) {
+        super(accountAlreadyExist.toString());
+        this.code = accountAlreadyExist.getCode();
+        this.accountAlreadyExist = accountAlreadyExist;
     }
 }
