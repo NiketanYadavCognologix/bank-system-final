@@ -91,13 +91,13 @@ public class BankOperationServiceImplementation implements BankOperationsService
             return createdAccountResponse;
 
         } catch (IllegalTypeOfAccountException exception) {
-            LOGGER.warn(exception.getIllegalTypeOfAccount().getMessage());
+            LOGGER.error(exception.getIllegalTypeOfAccount().getMessage());
             throw new IllegalTypeOfAccountException(exception.getMessage());
         } catch (CustomerNotFoundException exception) {
-            LOGGER.warn(exception.getCustomerNotFound().getMessage());
+            LOGGER.error(exception.getCustomerNotFound().getMessage());
             throw new CustomerNotFoundException(exception.getMessage());
         } catch (Exception exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
     }
@@ -133,7 +133,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             return depositAmountResponse;
 
         } catch (DeactivateAccountException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getDeactivateAccount().getMessage());
             throw new DeactivateAccountException(exception.getMessage());
         }
     }
@@ -180,10 +180,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
             return withdrawAmountResponse;
 
         } catch (DeactivateAccountException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getDeactivateAccount().getMessage());
             throw new DeactivateAccountException(exception.getMessage());
         } catch (InsufficientBalanceException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getInsufficientBalance().getMessage());
             throw new InsufficientBalanceException(exception.getMessage());
         }
     }
@@ -241,10 +241,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
             LOGGER.info(amountForTransfer + ForAccount.TRANSFER_AMOUNT.getMessage() + updatedBalance);
             return transferAmountResponse;
         } catch (DeactivateAccountException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getDeactivateAccount().getMessage());
             throw new DeactivateAccountException(exception.getMessage());
         } catch (InsufficientBalanceException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getInsufficientBalance().getMessage());
             throw new InsufficientBalanceException(exception.getMessage());
         }
     }
@@ -263,10 +263,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
             LOGGER.info(ForAccount.AVAILABLE_BALANCE.getMessage() + availableBalance);
             return balanceInquiryResponse;
         } catch (AccountNotAvailableException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getErrorsForAccount().getMessage());
             throw new AccountNotAvailableException(exception.getMessage());
         } catch (Exception exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
 
@@ -302,7 +302,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             LOGGER.info(ForAccount.DEACTIVATE_ACCOUNT.getMessage());
             return deactivateAccountResponse;
         } catch (AccountAlreadyDeactivatedException exception) {
-            LOGGER.warn(exception.getAccountAlreadyDeactivate().getMessage());
+            LOGGER.error(exception.getAccountAlreadyDeactivate().getMessage());
             throw new AccountAlreadyDeactivatedException(exception.getMessage());
         }
     }
@@ -322,7 +322,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             LOGGER.info(ForAccount.ACTIVATED_ACCOUNT.getMessage());
             return activateAccountResponse;
         } catch (AccountAlreadyActivatedException exception) {
-            LOGGER.warn(exception.getAccountAlreadyActivate().getMessage());
+            LOGGER.error(exception.getAccountAlreadyActivate().getMessage());
             throw new AccountAlreadyActivatedException(exception.getMessage());
         }
     }
@@ -337,10 +337,10 @@ public class BankOperationServiceImplementation implements BankOperationsService
             DeactivatedAccountsResponse deactivatedAccountsResponse = new DeactivatedAccountsResponse(true, ForAccount.LIST_OF_DEACTIVATED_ACCOUNTS.getMessage(), deactivatedAccounts);
             return deactivatedAccountsResponse;
         } catch (AccountNotAvailableException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getErrorsForAccount().getMessage());
             throw new AccountNotAvailableException(exception.getMessage());
         } catch (Exception exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
     }
@@ -353,7 +353,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
             }
             return foundedAccount;
         } catch (AccountNotAvailableException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getErrorsForAccount().getMessage());
             throw new AccountNotAvailableException(exception.getMessage());
         }
     }

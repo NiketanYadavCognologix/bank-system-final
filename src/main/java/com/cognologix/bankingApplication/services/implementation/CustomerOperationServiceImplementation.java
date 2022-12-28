@@ -50,10 +50,10 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
             return new CreateCustomerResponse(true, ForCustomer.CREATE_CUSTOMER.getMessage(), customerCreated);
 
         } catch (CustomerAlreadyExistException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getCustomerAlreadyExist().getMessage());
             throw new CustomerAlreadyExistException(exception.getMessage());
         } catch (Exception exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
     }
@@ -97,13 +97,13 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
             LOGGER.info(ForCustomer.UPDATE_CUSTOMER.getMessage());
             return customerUpdateResponse;
         } catch (CustomerNotFoundException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getCustomerNotFound().getMessage());
             throw new CustomerNotFoundException(exception.getMessage());
         } catch (CustomerAlreadyExistException exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getCustomerAlreadyExist().getMessage());
             throw new CustomerAlreadyExistException(exception.getMessage());
         } catch (Exception exception) {
-            LOGGER.warn(exception.getMessage());
+            LOGGER.error(exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
     }
