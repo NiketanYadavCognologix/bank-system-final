@@ -6,8 +6,6 @@ import lombok.Data;
 @Data
 public class InsufficientBalanceException extends RuntimeException {
     private Integer code;
-    private String Message;
-
     private ErrorsForAccount insufficientBalance;
     public InsufficientBalanceException() {
     }

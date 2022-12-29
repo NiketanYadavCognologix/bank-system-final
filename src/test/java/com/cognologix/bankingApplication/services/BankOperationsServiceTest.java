@@ -25,6 +25,8 @@ import com.cognologix.bankingApplication.exceptions.DeactivateAccountException;
 import com.cognologix.bankingApplication.exceptions.IllegalTypeOfAccountException;
 import com.cognologix.bankingApplication.exceptions.InsufficientBalanceException;
 import com.cognologix.bankingApplication.services.implementation.BankOperationServiceImplementation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -40,6 +42,8 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class BankOperationsServiceTest {
+
+    private static final Logger LOGGER = LogManager.getLogger(BankOperationsServiceTest.class);
     @Mock
     private BankAccountRepository bankAccountRepository;
 
@@ -72,7 +76,7 @@ public class BankOperationsServiceTest {
 
         CreatedAccountResponse actual = bankOperationServiceImplementation.createAccount(accountDto);
         assertEquals(expected, actual);
-
+        LOGGER.debug(actual);
     }
 
     @Test
@@ -87,7 +91,7 @@ public class BankOperationsServiceTest {
     @Test
     public void test_createAccount_CustomerNotFoundException() {
         accountDto = new AccountDto(null, "Savings", 1000.0, 33);
-        when(customerRepository.findByCustomerIdEquals(accountDto.getCustomerId())).thenThrow(new CustomerNotFoundException(ErrorsForCustomer.CUSTOMER_NOT_FOUND.toString()));
+        when(customerRepository.findByCustomerIdEquals(accountDto.getCustomerId())).thenThrow(new CustomerNotFoundException(ErrorsForCustomer.CUSTOMER_NOT_FOUND));
         CustomerNotFoundException exception = assertThrows(CustomerNotFoundException.class, () -> bankOperationServiceImplementation.createAccount(accountDto));
         assertEquals(ErrorsForCustomer.CUSTOMER_NOT_FOUND.toString(), exception.getMessage());
 
@@ -103,9 +107,9 @@ public class BankOperationsServiceTest {
 
     @Test
     public void testGetAccountByAccountNumber_AccountNotAvailableException() {
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenThrow(new AccountNotAvailableException("Account not available"));
+        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenThrow(new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE));
         AccountNotAvailableException exception = assertThrows(AccountNotAvailableException.class, () -> bankOperationServiceImplementation.getAccountByAccountNumber(account.getAccountNumber()));
-        assertEquals(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.toString(), exception.getMessage());
     }
 
 
@@ -126,9 +130,9 @@ public class BankOperationsServiceTest {
     public void testDepositAmount_DeactivateAccountException() {
         Account account = new Account(accountDto.getAccountNumber(), AccountStatus.DEACTIVATED.name(), accountDto.getAccountType(), accountDto.getBalance(), customer);
         when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())).thenThrow(new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT.getMessage()));
+        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())).thenThrow(new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT));
         DeactivateAccountException exception = assertThrows(DeactivateAccountException.class, () -> bankOperationServiceImplementation.depositAmount(account.getAccountNumber(), 500.00));
-        assertEquals(ErrorsForAccount.DEACTIVATE_ACCOUNT.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForAccount.DEACTIVATE_ACCOUNT.toString(), exception.getMessage());
 
     }
 
@@ -151,9 +155,9 @@ public class BankOperationsServiceTest {
     public void testWithdrawAmount_DeactivateAccountException() {
         Account account = new Account(accountDto.getAccountNumber(), AccountStatus.DEACTIVATED.name(), accountDto.getAccountType(), accountDto.getBalance(), customer);
         when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())).thenThrow(new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT.getMessage()));
+        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())).thenThrow(new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT));
         DeactivateAccountException exception = assertThrows(DeactivateAccountException.class, () -> bankOperationServiceImplementation.withdrawAmount(account.getAccountNumber(), 500.00));
-        assertEquals(ErrorsForAccount.DEACTIVATE_ACCOUNT.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForAccount.DEACTIVATE_ACCOUNT.toString(), exception.getMessage());
 
     }
 
@@ -162,9 +166,9 @@ public class BankOperationsServiceTest {
 
         Double amountToWithdraw = 500000.00;
         when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).getBalance() < amountToWithdraw).thenThrow(new InsufficientBalanceException(ErrorsForAccount.INSUFFICIENT_BALANCE.getMessage()));
+        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).getBalance() < amountToWithdraw).thenThrow(new InsufficientBalanceException(ErrorsForAccount.INSUFFICIENT_BALANCE));
         InsufficientBalanceException exception = assertThrows(InsufficientBalanceException.class, () -> bankOperationServiceImplementation.withdrawAmount(account.getAccountNumber(), amountToWithdraw));
-        assertEquals(ErrorsForAccount.INSUFFICIENT_BALANCE.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForAccount.INSUFFICIENT_BALANCE.toString(), exception.getMessage());
 
 
     }
@@ -193,9 +197,9 @@ public class BankOperationsServiceTest {
 
         Account account = new Account(accountDto.getAccountNumber(), AccountStatus.DEACTIVATED.name(), accountDto.getAccountType(), accountDto.getBalance(), customer);
         when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())).thenThrow(new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT.getMessage()));
+        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).getStatus().equalsIgnoreCase(AccountStatus.DEACTIVATED.name())).thenThrow(new DeactivateAccountException(ErrorsForAccount.DEACTIVATE_ACCOUNT));
         DeactivateAccountException exception = assertThrows(DeactivateAccountException.class, () -> bankOperationServiceImplementation.moneyTransfer(account.getAccountNumber(), accountForReceiveMoney.getAccountNumber(), 500.20));
-        assertEquals(ErrorsForAccount.DEACTIVATE_ACCOUNT.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForAccount.DEACTIVATE_ACCOUNT.toString(), exception.getMessage());
     }
 
     @Test
@@ -203,9 +207,9 @@ public class BankOperationsServiceTest {
 
         Double amountToWithdraw = 500000.00;
         when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).getBalance() < amountToWithdraw).thenThrow(new InsufficientBalanceException(ErrorsForAccount.INSUFFICIENT_BALANCE.getMessage()));
-        InsufficientBalanceException exception = assertThrows(InsufficientBalanceException.class, () -> bankOperationServiceImplementation.moneyTransfer(account.getAccountNumber(), accountForReceiveMoney.getAccountNumber(), 500.20));
-        assertEquals(ErrorsForAccount.INSUFFICIENT_BALANCE.getMessage(), exception.getMessage());
+        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).getBalance() < amountToWithdraw).thenThrow(new InsufficientBalanceException(ErrorsForAccount.INSUFFICIENT_BALANCE));
+        InsufficientBalanceException exception = assertThrows(InsufficientBalanceException.class, () -> bankOperationServiceImplementation.moneyTransfer(account.getAccountNumber(), accountForReceiveMoney.getAccountNumber(), 50000.20));
+        assertEquals(ErrorsForAccount.INSUFFICIENT_BALANCE.toString(), exception.getMessage());
 
     }
 
@@ -223,19 +227,18 @@ public class BankOperationsServiceTest {
 
     @Test
     public void testActivateAccountByAccountNumber_AccountNotAvailableException() {
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenThrow(new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.getMessage()));
+        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenThrow(new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE));
         AccountNotAvailableException exception = assertThrows(AccountNotAvailableException.class, () -> bankOperationServiceImplementation.activateAccountByAccountNumber(account.getAccountNumber()));
 
-        assertEquals(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.toString(), exception.getMessage());
     }
 
     @Test
     public void testActivateAccountByAccountNumber_AccountAlreadyActivatedException() {
         when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenReturn(account);
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).equals(AccountStatus.ACTIVATED)).thenThrow(new AccountAlreadyActivatedException(ErrorsForAccount.ACCOUNT_ALREADY_ACTIVATE.getMessage()));
+        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber()).equals(AccountStatus.ACTIVATED)).thenThrow(new AccountAlreadyActivatedException(ErrorsForAccount.ACCOUNT_ALREADY_ACTIVATE));
         AccountAlreadyActivatedException exception = assertThrows(AccountAlreadyActivatedException.class, () -> bankOperationServiceImplementation.activateAccountByAccountNumber(account.getAccountNumber()));
-
-        assertEquals(ErrorsForAccount.ACCOUNT_ALREADY_ACTIVATE.getMessage(), exception.getError());
+        assertEquals(ErrorsForAccount.ACCOUNT_ALREADY_ACTIVATE.toString(), exception.getMessage());
     }
 
     @Test
@@ -253,9 +256,9 @@ public class BankOperationsServiceTest {
 
     @Test
     public void testDeactivateAccountByAccountNumber_AccountNotAvailableException() {
-        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenThrow(new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.getMessage()));
+        when(bankAccountRepository.findByAccountNumberEquals(account.getAccountNumber())).thenThrow(new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE));
         AccountNotAvailableException exception = assertThrows(AccountNotAvailableException.class, () -> bankOperationServiceImplementation.deactivateAccountByAccountNumber(account.getAccountNumber()));
-        assertEquals(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.toString(), exception.getMessage());
     }
 
     @Test
@@ -277,10 +280,10 @@ public class BankOperationsServiceTest {
     @Test
     public void testGetAllDeactivatedAccounts_AccountNotAvailableException() throws AccountNotAvailableException {
         when(bankAccountRepository.findDeactivatedAccounts()).thenReturn(deactivatedAccounts);
-        when(bankAccountRepository.findDeactivatedAccounts()).thenThrow(new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.getMessage()));
+        when(bankAccountRepository.findDeactivatedAccounts()).thenThrow(new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE));
 
         Exception exception = assertThrows(AccountNotAvailableException.class, () -> bankOperationServiceImplementation.getAllDeactivatedAccounts());
-        assertEquals(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.toString(), exception.getMessage());
     }
 
     @Test
@@ -299,11 +302,11 @@ public class BankOperationsServiceTest {
     public void testGetAccountBalance_AccountNotAvailableException() {
         Long accountNumber = account.getAccountNumber();
         when(bankAccountRepository.findByAccountNumberEquals(accountNumber)).thenReturn(account);
-        when(bankAccountRepository.findByAccountNumberEquals(accountNumber)).thenThrow(new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.getMessage()));
+        when(bankAccountRepository.findByAccountNumberEquals(accountNumber)).thenThrow(new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE));
 
         Exception exception = assertThrows(AccountNotAvailableException.class, () -> bankOperationServiceImplementation.getAccountBalance(accountNumber));
 
-        String expected = "Account not available";
+        String expected = ErrorsForAccount.ACCOUNT_NOT_AVAILABLE.toString();
         String actual = exception.getMessage();
         assertEquals(expected, actual);
 

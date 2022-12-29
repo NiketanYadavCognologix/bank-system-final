@@ -71,6 +71,7 @@ public class AccountTest extends AbstractTest {
 
         String result = mvcResult.getResponse().getContentAsString();
         assertEquals(jsonRequest, result);
+
     }
 
     @Test

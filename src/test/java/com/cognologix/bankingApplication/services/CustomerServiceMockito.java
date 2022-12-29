@@ -60,7 +60,7 @@ public class CustomerServiceMockito {
 
         CustomerAlreadyExistException exception = assertThrows(CustomerAlreadyExistException.class, () -> customerOperationServiceImplementation.createNewCustomer(customerDto));
 
-        assertEquals(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.toString(), exception.getMessage());
 
     }
 
@@ -92,7 +92,7 @@ public class CustomerServiceMockito {
         when(customerRepository.findByCustomerIdEquals(customer.getCustomerId())).thenReturn(customer);
         CustomerAlreadyExistException exception = assertThrows(CustomerAlreadyExistException.class, () -> customerOperationServiceImplementation.updateCustomer(customerDto));
 
-        assertEquals(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST.toString(), exception.getMessage());
 
     }
 
@@ -101,7 +101,7 @@ public class CustomerServiceMockito {
         when(customerRepository.findByCustomerIdEquals(customer.getCustomerId())).thenReturn(null);
         CustomerNotFoundException exception = assertThrows(CustomerNotFoundException.class, () -> customerOperationServiceImplementation.updateCustomer(customerDto));
 
-        assertEquals(ErrorsForCustomer.CUSTOMER_NOT_FOUND.getMessage(), exception.getMessage());
+        assertEquals(ErrorsForCustomer.CUSTOMER_NOT_FOUND.toString(), exception.getMessage());
 
     }
 }

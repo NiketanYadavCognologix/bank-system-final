@@ -1,26 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
     <Appenders>
+        <!--get logger in console-->
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout
-                    pattern="%style{%d{ISO8601}}{Black} %highlight{%-5level }
+                    pattern="%style{%d{ISO8601}}{white} %highlight{%-5level }
                     [%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable"/>
         </Console>
 
-        <File name="LogToFile" fileName="logs/bankApp.log">
-            <PatternLayout>
-                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
-            </PatternLayout>
-        </File>
-    </Appenders>
-    <Loggers>
+        <RollingFile name="RollingFile" fileName="logs/myexample.log"
+                     filePattern="logs/myexample-%d{yyyy-MM-dd}-%i.log" >
+            <PatternLayout pattern="%d %p %C{1.} [%t] %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="4"/>
+        </RollingFile>
 
-        <Logger name="com.cognologix.bankingApplication" level="TRACE">
-            <AppenderRef ref="LogToFile"/>
+        <!--get logger in file-->
+        <File name="InfoLevel" fileName="logs/InfoLevel.log">
+            <PatternLayout pattern="%d %p %C{1.} [%t] %m%n"/>
+        </File>
+        <File name="ErrorLevel" fileName="logs/ErrorLevel.log">
+            <PatternLayout pattern="%d %p %C{1.} [%t] %m%n"/>
+        </File>
+        <File name="DebugLevel" fileName="logs/DebugLevel.log">
+            <PatternLayout pattern="%d %p %C{1.} [%t] %m%n"/>
+        </File>
+
+    </Appenders>
+
+    <!--  FATAL  <- ERROR  <-  WARN  <-  INFO  <- DEBUG  <-  TRACE -->
+
+
+    <!--Logger is associated with a package or sometimes with a particular class-->
+    <loggers>
+        <Logger name="com.cognologix.bankingApplication" level="debug">
+            <AppenderRef ref="DebugLevel"/>
+            <AppenderRef ref="RollingFile"/>
         </Logger>
-        <Root level="info">
-            <AppenderRef ref="Console"/>
-        </Root>
-    </Loggers>
+
+        <!--Root logger logs messages for all classes in the application-->
+        <root level="debug">
+            <appender-ref ref="Console" level="info"/>
+            <appender-ref ref="InfoLevel" level="info"/>
+            <appender-ref ref="ErrorLevel" level="error"/>
+        </root>
+    </loggers>
 
 </Configuration>

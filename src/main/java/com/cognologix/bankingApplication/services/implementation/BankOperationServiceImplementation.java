@@ -254,7 +254,7 @@ public class BankOperationServiceImplementation implements BankOperationsService
     public BalanceInquiryResponse getAccountBalance(Long accountNumber) {
         try {
             Account accountAvailable = bankAccountRepository.findByAccountNumberEquals(accountNumber);
-            if (accountAvailable == null) {
+            if (null == accountAvailable) {
                 throw new AccountNotAvailableException(ErrorsForAccount.ACCOUNT_NOT_AVAILABLE);
             }
             Double availableBalance = bankAccountRepository.findByAccountNumberEquals(accountNumber).getBalance();
