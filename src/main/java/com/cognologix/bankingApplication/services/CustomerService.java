@@ -8,7 +8,7 @@ import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.GetAll
 import org.springframework.stereotype.Service;
 
 @Service
-public interface CustomerOperationService {
+public interface CustomerService {
     CreateCustomerResponse createNewCustomer(CustomerDto customerDto);
     GetAllCustomerResponse getAllCustomers();
 

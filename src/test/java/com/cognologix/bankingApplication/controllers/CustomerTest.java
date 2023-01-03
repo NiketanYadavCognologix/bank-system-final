@@ -29,9 +29,9 @@ public class CustomerTest extends AbstractTest {
 
     Customer customer = new Customer(1, "Onkar", "11-11-1998",
             "903998989010", "PAN36SURYA", "sury6awanshi@gmail.com", "Male");
-    AccountDto accountDto = new AccountDto(null, "Savings", 1000.0, 1);
+    AccountDto accountDto = new AccountDto(null,"SBI","KATRAJ", "Savings", 1000.0, 1);
 
-    Account account = new Account(accountDto.getAccountNumber(),
+    Account account = new Account(accountDto.getAccountNumber(),"SBI","KATRAJ","SBI001122",
             "Activate", accountDto.getAccountType(), accountDto.getBalance(), customer);
 
     @Test

@@ -8,25 +8,33 @@
                     [%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable"/>
         </Console>
 
-        <RollingFile name="RollingFile" fileName="logs/myexample.log"
-                     filePattern="logs/myexample-%d{yyyy-MM-dd}-%i.log" >
-            <PatternLayout pattern="%d %p %C{1.} [%t] %m%n"/>
+        <RollingFile name="account" fileName="logs/Account.log"
+                     filePattern="logs/Account-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d %p %C{1.} [%t] [%X{executionStep}] %m%n"/>
             <Policies>
-                <SizeBasedTriggeringPolicy size="10 MB" />
+                <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="4"/>
         </RollingFile>
 
-        <!--get logger in file-->
-        <File name="InfoLevel" fileName="logs/InfoLevel.log">
-            <PatternLayout pattern="%d %p %C{1.} [%t] %m%n"/>
-        </File>
-        <File name="ErrorLevel" fileName="logs/ErrorLevel.log">
-            <PatternLayout pattern="%d %p %C{1.} [%t] %m%n"/>
-        </File>
-        <File name="DebugLevel" fileName="logs/DebugLevel.log">
-            <PatternLayout pattern="%d %p %C{1.} [%t] %m%n"/>
-        </File>
+        <RollingFile name="customer" fileName="logs/Customer.log"
+                     filePattern="logs/Customer-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d %p %C{1.} [%t] [%X{executionStep}] %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="4"/>
+        </RollingFile>
+
+        <RollingFile name="bank" fileName="logs/Bank.log"
+                     filePattern="logs/Bank-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d %p %C{1.} [%t] [%X{executionStep}] %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="4"/>
+        </RollingFile>
+
 
     </Appenders>
 
@@ -35,16 +43,48 @@
 
     <!--Logger is associated with a package or sometimes with a particular class-->
     <loggers>
-        <Logger name="com.cognologix.bankingApplication" level="debug">
-            <AppenderRef ref="DebugLevel"/>
-            <AppenderRef ref="RollingFile"/>
+<!--    For account    -->
+        <Logger name="com.cognologix.bankingApplication.controllers.AccountController" level="debug">
+            <AppenderRef ref="account"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.services.implementation.AccountServiceImplementation" level="debug">
+            <AppenderRef ref="account"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.exceptions.handlers.HandlerForAccount" level="error">
+            <AppenderRef ref="account"/>
+        </Logger>
+
+<!--    For customer    -->
+        <Logger name="com.cognologix.bankingApplication.controllers.CustomerController" level="debug">
+            <AppenderRef ref="customer"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.services.implementation.CustomerServiceImplementation" level="debug">
+            <AppenderRef ref="customer"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.exceptions.handlers.HandlerForCustomer" level="error">
+            <AppenderRef ref="customer"/>
+        </Logger>
+
+<!--    For Bank    -->
+        <Logger name="com.cognologix.bankingApplication.controllers.BankController" level="debug">
+            <AppenderRef ref="bank"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.services.implementation.BankServiceImplementation" level="debug">
+            <AppenderRef ref="bank"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.exceptions.handlers.HandlerForBank" level="error">
+            <AppenderRef ref="bank"/>
         </Logger>
 
         <!--Root logger logs messages for all classes in the application-->
-        <root level="debug">
-            <appender-ref ref="Console" level="info"/>
-            <appender-ref ref="InfoLevel" level="info"/>
-            <appender-ref ref="ErrorLevel" level="error"/>
+        <root level="INFO">
+            <appender-ref ref="Console" level="INFO"/>
         </root>
     </loggers>
 

@@ -1,4 +1,4 @@
-package com.cognologix.bankingApplication.dto.Responses.bankOperations;
+package com.cognologix.bankingApplication.dto.Responses.accountOperations;
 
 import com.cognologix.bankingApplication.dto.Responses.BaseResponse;
 

@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
 
-            LOGGER.warn(errorMessage);
+            LOGGER.error("Exception : {}",errorMessage);
             errors.put(fieldName, errorMessage);
         });
 

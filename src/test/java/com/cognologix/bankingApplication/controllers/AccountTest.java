@@ -3,12 +3,12 @@ package com.cognologix.bankingApplication.controllers;
 import com.cognologix.bankingApplication.dto.AccountDto;
 import com.cognologix.bankingApplication.dto.CustomerDto;
 import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.BalanceInquiryResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.ActivateAccountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.CreatedAccountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivateAccountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivatedAccountsResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.DepositAmountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.WithdrawAmountResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.ActivateAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.CreatedAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.DeactivateAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.DeactivatedAccountsResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.DepositAmountResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.WithdrawAmountResponse;
 import com.cognologix.bankingApplication.entities.Account;
 import com.cognologix.bankingApplication.entities.Customer;
 import com.cognologix.bankingApplication.enums.AccountStatus;
@@ -45,19 +45,20 @@ public class AccountTest extends AbstractTest {
 
     CustomerDto customerDto = new CustomerDto(1, "Onkar", "11-11-1998",
             "903998989010", "PAN36SURYA", "sury6awanshi@gmail.com", "Male");
-    AccountDto accountDto = new AccountDto(7L, "SAVINGS", 1000.0, 1);
+    AccountDto accountDto = new AccountDto(7L,"SBI","KATRAJ", "SAVINGS",
+            1000.0, 1);
 
-    Account account = new Account(accountDto.getAccountNumber(),
-            "ACTIVATED", accountDto.getAccountType(), accountDto.getBalance(), customer);
+    Account account = new Account(accountDto.getAccountNumber(),accountDto.getBankName(), accountDto.getBranch(),
+            "SBI001122","ACTIVATED", accountDto.getAccountType(), accountDto.getBalance(), customer);
 
     @Test
     @DisplayName("create account")
     public void createAccount() throws Exception {
         this.setUp();
 
-        AccountDto accountDto = new AccountDto(15L, "SAVINGS", 1000.0, 1);
+        AccountDto accountDto = new AccountDto(15L,"SBI","KATRAJ", "SAVINGS", 1000.0, 1);
 
-        Account account = new Account(accountDto.getAccountNumber(),
+        Account account = new Account(accountDto.getAccountNumber(),"SBI","KATRAJ","SBI001122",
                 "ACTIVATED", accountDto.getAccountType(), accountDto.getBalance(), customer);
 
         String uri = "/account/create";
@@ -79,7 +80,7 @@ public class AccountTest extends AbstractTest {
     public void testCreateAccount_CustomerNotFoundException() throws Exception {
         this.setUp();
 
-        AccountDto accountDto = new AccountDto(15L, "SAVINGS", 1000.0, 54);
+        AccountDto accountDto = new AccountDto(15L,"SBI","KATRAJ", "SAVINGS", 1000.0, 54);
 
         String uri = "/account/create";
         this.mvc.perform(MockMvcRequestBuilders.post(uri)
@@ -94,7 +95,7 @@ public class AccountTest extends AbstractTest {
     public void testCreateAccount_IllegalTypeOfAccountException() throws Exception {
         this.setUp();
 
-        AccountDto accountDto = new AccountDto(15L, "SAVNGS", 1000.0, 1);
+        AccountDto accountDto = new AccountDto(15L,"SBI","KATRAJ", "SAVNGS", 1000.0, 1);
 
         String uri = "/account/create";
         this.mvc.perform(MockMvcRequestBuilders.post(uri)
@@ -109,7 +110,7 @@ public class AccountTest extends AbstractTest {
     public void testDeactivateAccount() throws Exception {
         this.setUp();
 
-        Account account = new Account(3L,
+        Account account = new Account(3L,"SBI","KATRAJ","SBI001122",
                 AccountStatus.ACTIVATED.name(), accountDto.getAccountType(), accountDto.getBalance(), customer);
 
         String uri = "/account/deactivate";
@@ -142,7 +143,7 @@ public class AccountTest extends AbstractTest {
     public void testDeactivateAccount_AccountAlreadyDeactivatedException() throws Exception {
         this.setUp();
 
-        Account account = new Account(1L,
+        Account account = new Account(1L,"SBI","KATRAJ","SBI001122",
                 AccountStatus.DEACTIVATED.name(), accountDto.getAccountType(), accountDto.getBalance(), customer);
 
         String uri = "/account/deactivate";
@@ -159,7 +160,7 @@ public class AccountTest extends AbstractTest {
     public void testGetAllDeactivatedAccounts() throws Exception {
         this.setUp();
         List<Account> deactivateAccounts=new ArrayList<>();
-        Account account = new Account(accountDto.getAccountNumber(),
+        Account account = new Account(accountDto.getAccountNumber(),"SBI","KATRAJ","SBI001122",
                 AccountStatus.DEACTIVATED.name(), accountDto.getAccountType(), accountDto.getBalance(), customer);
         deactivateAccounts.add(account);
         String uri = "/account/get-deactivated-accounts";
@@ -209,7 +210,7 @@ public class AccountTest extends AbstractTest {
     public void testActivateAccount_AccountAlreadyActivatedException() throws Exception {
         this.setUp();
 
-        Account account = new Account(2L,
+        Account account = new Account(2L,"SBI","KATRAJ","SBI001122",
                 AccountStatus.ACTIVATED.name(), accountDto.getAccountType(), accountDto.getBalance(), customer);
 
         String uri = "/account/activate";

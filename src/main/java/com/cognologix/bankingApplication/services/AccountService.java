@@ -2,19 +2,19 @@ package com.cognologix.bankingApplication.services;
 
 import com.cognologix.bankingApplication.dto.AccountDto;
 import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.BalanceInquiryResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.ActivateAccountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.CreatedAccountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivateAccountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.DeactivatedAccountsResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.DepositAmountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.TransferAmountResponse;
-import com.cognologix.bankingApplication.dto.Responses.bankOperations.WithdrawAmountResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.ActivateAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.CreatedAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.DeactivateAccountResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.DeactivatedAccountsResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.DepositAmountResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.TransferAmountResponse;
+import com.cognologix.bankingApplication.dto.Responses.accountOperations.WithdrawAmountResponse;
 import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.TransactionStatementResponse;
 import com.cognologix.bankingApplication.entities.Account;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface BankOperationsService {
+public interface AccountService {
 
     CreatedAccountResponse createAccount(AccountDto accountDto);
 

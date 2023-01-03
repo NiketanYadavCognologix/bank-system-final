@@ -23,6 +23,15 @@ public class Account {
     @Column(name = "accountNumber")
     private Long accountNumber;
 
+    @Column(name = "bank")
+    private String bankName;
+
+    @Column(name = "branch")
+    private String branch;
+
+    @Column(name = "ifscCode")
+    private String IFSCCode;
+
     @Column(name = "status")
     private String status;
 
@@ -31,6 +40,8 @@ public class Account {
 
     @Column(name = "balance")
     private Double balance;
+
+
 
     @OneToOne
     private Customer customer;

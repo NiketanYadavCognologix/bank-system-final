@@ -10,7 +10,7 @@ import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForCusto
 import com.cognologix.bankingApplication.enums.responseMessages.ForCustomer;
 import com.cognologix.bankingApplication.exceptions.CustomerAlreadyExistException;
 import com.cognologix.bankingApplication.exceptions.CustomerNotFoundException;
-import com.cognologix.bankingApplication.services.implementation.CustomerOperationServiceImplementation;
+import com.cognologix.bankingApplication.services.implementation.CustomerServiceImplementation;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,14 +23,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = CustomerOperationService.class)
+@SpringBootTest(classes = CustomerService.class)
 public class CustomerServiceMockito {
 
     @Mock
     private CustomerRepository customerRepository;
 
     @InjectMocks
-    private CustomerOperationServiceImplementation customerOperationServiceImplementation;
+    private CustomerServiceImplementation customerOperationServiceImplementation;
 
     CustomerDto customerDto = new CustomerDto(1, "Onkar",
             "10-10-1998", "903997989010",
@@ -43,9 +43,6 @@ public class CustomerServiceMockito {
 
     @Test
     void createNewCustomer() {
-        customerRepository.findByCustomerAdharNumberPanCardNumberEmailId(customer.getAdharNumber(),
-                customer.getPanCardNumber(), customer.getEmailId());
-
         when(customerRepository.save(customer)).thenReturn(customer);
         CreateCustomerResponse actual = customerOperationServiceImplementation.createNewCustomer(customerDto);
 

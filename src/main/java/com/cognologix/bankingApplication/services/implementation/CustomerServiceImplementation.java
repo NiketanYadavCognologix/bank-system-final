@@ -10,23 +10,25 @@ import com.cognologix.bankingApplication.dto.Responses.CustomerOperations.GetAll
 import com.cognologix.bankingApplication.dto.dtoToEntity.CustomerDtoToEntity;
 import com.cognologix.bankingApplication.entities.Account;
 import com.cognologix.bankingApplication.entities.Customer;
+import com.cognologix.bankingApplication.enums.LogMessages;
 import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForCustomer;
 import com.cognologix.bankingApplication.enums.responseMessages.ForCustomer;
 import com.cognologix.bankingApplication.exceptions.AccountNotAvailableException;
 import com.cognologix.bankingApplication.exceptions.CustomerAlreadyExistException;
 import com.cognologix.bankingApplication.exceptions.CustomerNotFoundException;
-import com.cognologix.bankingApplication.services.CustomerOperationService;
+import com.cognologix.bankingApplication.services.CustomerService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CustomerOperationServiceImplementation implements CustomerOperationService {
+public class CustomerServiceImplementation implements CustomerService {
 
-    private static final Logger LOGGER = LogManager.getLogger(CustomerOperationServiceImplementation.class);
+    private static final Logger LOGGER = LogManager.getLogger(CustomerServiceImplementation.class);
     @Autowired
     private BankAccountRepository bankAccountRepository;
 
@@ -46,6 +48,10 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
             }
 
             Customer customerCreated = customerRepository.save(customer);
+            ThreadContext.put("executionStep","step-2");
+            LOGGER.info(LogMessages.SUCCESSFUL_UPDATE_DATABASE.getMessage());
+
+            ThreadContext.put("executionStep","step-3");
             LOGGER.info(ForCustomer.CREATE_CUSTOMER.getMessage());
             return new CreateCustomerResponse(true, ForCustomer.CREATE_CUSTOMER.getMessage(), customerCreated);
 
@@ -71,6 +77,7 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
         if (matchingAccounts.isEmpty()) {
             throw new AccountNotAvailableException(ErrorsForCustomer.ACCOUNT_NOT_AVAILABLE);
         }
+        ThreadContext.put("executionStep","step-2");
         LOGGER.info(ForCustomer.ALL_ACCOUNTS_FOR_CUSTOMER.getMessage());
         return new GetAllAccountsForCustomerResponse(true, ForCustomer.ALL_ACCOUNTS_FOR_CUSTOMER.getMessage(), matchingAccounts);
     }
@@ -91,9 +98,13 @@ public class CustomerOperationServiceImplementation implements CustomerOperation
                 throw new CustomerAlreadyExistException(ErrorsForCustomer.CUSTOMER_ALREADY_EXIST);
             }
             Customer updatedCustomer = customerRepository.save(customer);
+            ThreadContext.put("executionStep","step-2");
+            LOGGER.info(LogMessages.SUCCESSFUL_UPDATE_DATABASE.getMessage());
+
             CustomerUpdateResponse customerUpdateResponse = new CustomerUpdateResponse(true,
                     ForCustomer.UPDATE_CUSTOMER.getMessage(), updatedCustomer);
 
+            ThreadContext.put("executionStep","step-3");
             LOGGER.info(ForCustomer.UPDATE_CUSTOMER.getMessage());
             return customerUpdateResponse;
         } catch (CustomerNotFoundException exception) {

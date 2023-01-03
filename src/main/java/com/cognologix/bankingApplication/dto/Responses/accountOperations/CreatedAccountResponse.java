@@ -1,4 +1,4 @@
-package com.cognologix.bankingApplication.dto.Responses.bankOperations;
+package com.cognologix.bankingApplication.dto.Responses.accountOperations;
 
 import com.cognologix.bankingApplication.dto.Responses.BaseResponse;
 import com.cognologix.bankingApplication.entities.Account;
@@ -11,6 +11,9 @@ public class CreatedAccountResponse extends BaseResponse {
 
     private String customerName;
     private Long accountNumber;
+    private String bank;
+    private String branch;
+    private String IFSCCode;
     private String accountType;
     private String status;
     private Double balance;
@@ -23,6 +26,9 @@ public class CreatedAccountResponse extends BaseResponse {
         accountType=account.getAccountType();
         status=account.getStatus();
         balance=account.getBalance();
+        bank=account.getBankName();
+        branch=account.getBranch();
+        IFSCCode=account.getIFSCCode();
     }
 
     public CreatedAccountResponse() {

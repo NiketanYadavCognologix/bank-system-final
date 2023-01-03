@@ -20,6 +20,12 @@ public class AccountDto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountNumber;
 
+    @NotEmpty(message = "Bank name cannot empty")
+    private String bankName;
+
+    @NotEmpty(message = "bank branch cannot empty")
+    private String branch;
+
     @NotEmpty(message = "Type of account cannot null")
     private String accountType;
 
