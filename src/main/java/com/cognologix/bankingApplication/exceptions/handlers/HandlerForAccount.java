@@ -33,7 +33,7 @@ public class HandlerForAccount {
         Integer code = ErrorsForAccount.valueOf(exception.getMessage()).getCode();
         String message = ErrorsForAccount.valueOf(exception.getMessage()).getMessage();
         ApplicationError applicationError = new ApplicationError(code, message);
-        LOGGER.error("Exception : {} : "+message, exception.getStackTrace());
+        LOGGER.error("Exception : {} : ",message, exception);
         return new ResponseEntity<>(applicationError, HttpStatus.BAD_REQUEST);
     }
 }

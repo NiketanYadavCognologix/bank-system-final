@@ -24,4 +24,7 @@ public class Bank {
     @NotEmpty(message = "bank name cannot null")
     private String bankName;
 
+    @OneToMany
+    private List<Branch> branches;
+
 }

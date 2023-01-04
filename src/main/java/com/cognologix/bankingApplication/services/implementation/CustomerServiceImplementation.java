@@ -56,7 +56,6 @@ public class CustomerServiceImplementation implements CustomerService {
             return new CreateCustomerResponse(true, ForCustomer.CREATE_CUSTOMER.getMessage(), customerCreated);
 
         } catch (CustomerAlreadyExistException exception) {
-            LOGGER.error(exception.getCustomerAlreadyExist().getMessage());
             throw new CustomerAlreadyExistException(exception.getMessage());
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage());
@@ -108,10 +107,8 @@ public class CustomerServiceImplementation implements CustomerService {
             LOGGER.info(ForCustomer.UPDATE_CUSTOMER.getMessage());
             return customerUpdateResponse;
         } catch (CustomerNotFoundException exception) {
-            LOGGER.error(exception.getCustomerNotFound().getMessage());
             throw new CustomerNotFoundException(exception.getMessage());
         } catch (CustomerAlreadyExistException exception) {
-            LOGGER.error(exception.getCustomerAlreadyExist().getMessage());
             throw new CustomerAlreadyExistException(exception.getMessage());
         } catch (Exception exception) {
             LOGGER.error(exception.getMessage());

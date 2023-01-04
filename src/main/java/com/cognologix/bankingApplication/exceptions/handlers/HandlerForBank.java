@@ -24,7 +24,7 @@ public class HandlerForBank {
         Integer code = ErrorsForBank.valueOf(exception.getMessage()).getCode();
         String message = ErrorsForBank.valueOf(exception.getMessage()).getMessage();
         ApplicationError applicationError = new ApplicationError(code, message);
-        LOGGER.error("Exception : {} : "+message, exception.getStackTrace());
+        LOGGER.error("Exception : {} : ",message, exception.getStackTrace());
         return new ResponseEntity<>(applicationError, HttpStatus.BAD_REQUEST);
     }
 }

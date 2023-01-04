@@ -25,7 +25,7 @@ public class HandlerForCustomer {
         Integer code = ErrorsForCustomer.valueOf(exception.getMessage()).getCode();
         String message = ErrorsForCustomer.valueOf(exception.getMessage()).getMessage();
         ApplicationError applicationError = new ApplicationError(code, message);
-        LOGGER.error("Exception : {} : "+message, exception.getStackTrace());
+        LOGGER.error("Exception : {} : ",message, exception.getStackTrace());
         return new ResponseEntity<>(applicationError, HttpStatus.BAD_REQUEST);
     }
 

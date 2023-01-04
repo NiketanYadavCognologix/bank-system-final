@@ -1,9 +1,11 @@
 package com.cognologix.bankingApplication.services.implementation;
 
-import com.cognologix.bankingApplication.dao.BankBranchRepository;
+import com.cognologix.bankingApplication.dao.BranchRepository;
 import com.cognologix.bankingApplication.dao.BankRepository;
 import com.cognologix.bankingApplication.dto.BranchDto;
 import com.cognologix.bankingApplication.dto.Responses.BankOperations.CreateBranchResponse;
+import com.cognologix.bankingApplication.dto.dtoToEntity.BankDtoToEntity;
+import com.cognologix.bankingApplication.dto.dtoToEntity.BranchDtoToEntity;
 import com.cognologix.bankingApplication.entities.banks.Bank;
 import com.cognologix.bankingApplication.entities.banks.branch.Branch;
 import com.cognologix.bankingApplication.enums.LogMessages;
@@ -18,50 +20,61 @@ import org.apache.logging.log4j.ThreadContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class BankServiceImplementation implements BankService {
 
     private static final Logger LOGGER = LogManager.getLogger(BankServiceImplementation.class);
     @Autowired
-    BankBranchRepository bankBranchRepository;
+    private BranchRepository branchRepository;
     @Autowired
     private BankRepository bankRepository;
     @Override
     public CreateBranchResponse createBranch(BranchDto branchDto) {
        try {
-
+            //check bank exist or not
            Bank existingBank = bankRepository.findByBankNameEquals(branchDto.getBankName());
            if(null == existingBank){
                throw new BankNameNotFoundException(ErrorsForBank.BANK_NAME_NOT_FOUND);
            }
-           Branch foundBranch = bankBranchRepository.findByBranchEquals(branchDto.getBranchName());
-           if (null != foundBranch) {
-               String bankName = bankRepository.findByBankNameEquals(branchDto.getBankName()).getBankName();
-               if(branchDto.getBankName().equalsIgnoreCase(bankName)) {
+           //getting list of branches for given Bank
+          List<Branch> foundBranches = branchRepository.findByBankNameEquals(existingBank.getBankName());
+
+           //check is branch available for given bank
+           List<Branch> isBranchAlreadyAvailable = foundBranches.stream()
+                   .filter(branch -> branch.getBranch().equalsIgnoreCase(branchDto.getBranchName()))
+                   .collect(Collectors.toList());
+           if(!isBranchAlreadyAvailable.isEmpty()) {
                    throw new BranchAlreadyExistException(ErrorsForBank.BRANCH_ALREADY_EXIST);
-               }
            }
-           Branch branch = new Branch();
+           //converting branchDto to branch entity
+           //argument for generating ifsc code for branch
+           Branch branch=new BranchDtoToEntity().branchDtoToBranchEntity(branchDto,foundBranches);
 
-           branch.setBank(existingBank);
-           branch.setBranch(branchDto.getBranchName().toUpperCase());
-           branch.setAddress(branchDto.getAddress());
-           branch.setIFSCCode("IFSC0100" + bankBranchRepository.findAll().size());
+            //adding the branch into banks branch list
+           foundBranches.add(branch);
 
-
-           Branch isSave = bankBranchRepository.save(branch);
+            //save to database
+           Branch isSave = branchRepository.save(branch);
            if(null != isSave){
                ThreadContext.put("executionStep","step-2");
                LOGGER.info(LogMessages.SUCCESSFUL_UPDATE_DATABASE.getMessage());
            }
+            //creating bank by giving parameters
+           Bank bank = new BankDtoToEntity().bankDtoBankEntity(existingBank,foundBranches);
+
+           //saving the updated bank to database
+           bankRepository.save(bank);
+
+            //log message wih steps
            ThreadContext.put("executionStep","step-3");
            LOGGER.info(ForBank.NEW_BRANCH.getMessage());
            return new CreateBranchResponse(true, ForBank.NEW_BRANCH.getMessage());
        }catch (BranchAlreadyExistException exception){
-           LOGGER.error(exception.getBranchAlreadyExist().getMessage());
            throw new BranchAlreadyExistException(exception.getMessage());
        }catch (BankNameNotFoundException exception){
-           LOGGER.error(exception.getBankNameNotFound().getMessage());
            throw new BankNameNotFoundException(exception.getMessage());
        }
     }

@@ -1,7 +1,7 @@
 package com.cognologix.bankingApplication.services.implementation;
 
 import com.cognologix.bankingApplication.dao.BankAccountRepository;
-import com.cognologix.bankingApplication.dao.BankBranchRepository;
+import com.cognologix.bankingApplication.dao.BranchRepository;
 import com.cognologix.bankingApplication.dao.CustomerRepository;
 import com.cognologix.bankingApplication.dao.TransactionRepository;
 import com.cognologix.bankingApplication.dto.AccountDto;
@@ -24,7 +24,13 @@ import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForBank;
 import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForCustomer;
 import com.cognologix.bankingApplication.enums.responseMessages.ForAccount;
 import com.cognologix.bankingApplication.enums.responseMessages.ForCustomer;
-import com.cognologix.bankingApplication.exceptions.*;
+import com.cognologix.bankingApplication.exceptions.AccountAlreadyActivatedException;
+import com.cognologix.bankingApplication.exceptions.AccountAlreadyDeactivatedException;
+import com.cognologix.bankingApplication.exceptions.AccountNotAvailableException;
+import com.cognologix.bankingApplication.exceptions.CustomerNotFoundException;
+import com.cognologix.bankingApplication.exceptions.DeactivateAccountException;
+import com.cognologix.bankingApplication.exceptions.IllegalTypeOfAccountException;
+import com.cognologix.bankingApplication.exceptions.InsufficientBalanceException;
 import com.cognologix.bankingApplication.exceptions.forBank.BankNameNotFoundException;
 import com.cognologix.bankingApplication.exceptions.forBank.BranchNotAvailableException;
 import com.cognologix.bankingApplication.services.AccountService;
@@ -53,7 +59,7 @@ public class AccountServiceImplementation implements AccountService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private BankBranchRepository bankBranchRepository;
+    private BranchRepository branchRepository;
 
     //creating and saving account into database by JPA
     @Override
@@ -69,15 +75,16 @@ public class AccountServiceImplementation implements AccountService {
             } catch (Exception exception) {
                 throw new IllegalTypeOfAccountException(ErrorsForAccount.ILLEGAL_TYPE_OF_ACCOUNT);
             }
-
+            //check bank name
             try {
                 String bankName = BankName.valueOf(accountDto.getBankName().toUpperCase()).toString();
                 accountDto.setBankName(bankName);
             } catch (Exception exception) {
                 throw new BankNameNotFoundException(ErrorsForBank.BANK_NAME_NOT_FOUND);
             }
-            Branch existingBranch = bankBranchRepository.findByBranchEquals(accountDto.getBranch());
-            if(null == existingBranch ||  !existingBranch.getBank().getBankName().equals(accountDto.getBankName())){
+            //get existing branch from database
+            Branch existingBranch = branchRepository.findByBranchEquals(accountDto.getBranch());
+            if(null == existingBranch ){//||  !existingBranch.getBank().getBankName().equals(accountDto.getBankName())){
                 throw new BranchNotAvailableException(ErrorsForBank.BRANCH_NOT_FOUND);
             }
             //adding information from AccountDTO in account

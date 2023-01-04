@@ -1,7 +1,7 @@
 package com.cognologix.bankingApplication.services;
 
 import com.cognologix.bankingApplication.dao.BankAccountRepository;
-import com.cognologix.bankingApplication.dao.BankBranchRepository;
+import com.cognologix.bankingApplication.dao.BranchRepository;
 import com.cognologix.bankingApplication.dao.CustomerRepository;
 import com.cognologix.bankingApplication.dao.TransactionRepository;
 import com.cognologix.bankingApplication.dto.AccountDto;
@@ -15,6 +15,7 @@ import com.cognologix.bankingApplication.dto.Responses.accountOperations.Transfe
 import com.cognologix.bankingApplication.dto.Responses.accountOperations.WithdrawAmountResponse;
 import com.cognologix.bankingApplication.entities.Account;
 import com.cognologix.bankingApplication.entities.Customer;
+import com.cognologix.bankingApplication.entities.banks.Bank;
 import com.cognologix.bankingApplication.entities.banks.branch.Branch;
 import com.cognologix.bankingApplication.enums.AccountStatus;
 import com.cognologix.bankingApplication.enums.errorWithErrorCode.ErrorsForAccount;
@@ -56,7 +57,7 @@ public class BankOperationsServiceTest {
     private TransactionRepository transactionRepository;
 
     @Mock
-    private BankBranchRepository bankBranchRepository;
+    private BranchRepository branchRepository;
 
     @InjectMocks
     private AccountServiceImplementation accountServiceImplementation;
@@ -69,7 +70,7 @@ public class BankOperationsServiceTest {
 
     Account accountForReceiveMoney = new Account(2L,"SBI","KATRAJ","SBI001122", "Activate", "Cuarrent", 10000.00, customer);
 
-    Branch branch = new Branch(1,"KATRAJ","Katraj, Pune, Maharashtra","SBI001122");
+    Branch branch = new Branch(1,"KATRAJ","Katraj, Pune, Maharashtra","SBI001122",new Bank(1,"SBI"));
 
     Account deactivatedAccount;
     List<Account> deactivatedAccounts = new ArrayList<>();
@@ -78,7 +79,7 @@ public class BankOperationsServiceTest {
     @Test
     public void testCreateAccount() {
         when(customerRepository.findByCustomerIdEquals(accountDto.getCustomerId())).thenReturn(customer);
-        when(bankBranchRepository.findByBranchEquals(accountDto.getBranch())).thenReturn(branch);
+        when(branchRepository.findByBranchEquals(accountDto.getBranch())).thenReturn(branch);
         when(bankAccountRepository.save(account)).thenReturn(account);
         CreatedAccountResponse expected = new CreatedAccountResponse(true,
                 ForAccount.CREATE_ACCOUNT.getMessage(), account);

@@ -3,6 +3,10 @@ package com.cognologix.bankingApplication.dao;
 import com.cognologix.bankingApplication.entities.banks.branch.Branch;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BankBranchRepository extends JpaRepository<Branch,Integer> {
+import java.util.List;
+
+public interface BranchRepository extends JpaRepository<Branch,Integer> {
     Branch findByBranchEquals(String branch);
+
+    List<Branch> findByBankNameEquals(String bankName);
 }
