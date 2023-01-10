@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <!--get logger in console-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%style{%d{ISO8601}}{white} %highlight{%-5level }
+                    [%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable"/>
+        </Console>
+
+        <!--
+            ***** Log pattern layout*****
+
+            % -> The sequence %% outputs a single percent sign.
+            d -> Used to output the date of the logging event, e.g. ISO8601 format.
+            level -> Used to output of logging level.
+            p -> Used to output the priority of the logging event.
+            t -> Used to output the name of the thread that generated the logging event.
+            C -> Used to output the fully qualified class name of the caller issuing the logging request.
+            msg -> Used to output the message.
+            m -> Used to output the application supplied message associated with the logging event.
+            n -> Outputs the platform dependent line separator character or characters.
+            X -> Used to output the MDC (mapped diagnostic context) associated with
+                    the thread that generated the logging event.
+
+            refer this for Log pattern layout ->  https://logging.apache.org/log4j/2.x/manual/layouts.html
+                                                   https://www.tutorialspoint.com/log4j/log4j_patternlayout.htm
+        -->
+        <RollingFile name="account" fileName="logs/Account.log"
+                     filePattern="logs/Account-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d %p %C{1.} [%t] [%X{executionStep}] %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="4"/>
+        </RollingFile>
+
+        <RollingFile name="customer" fileName="logs/Customer.log"
+                     filePattern="logs/Customer-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d %p %C{1.} [%t] [%X{executionStep}] %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="4"/>
+        </RollingFile>
+
+        <RollingFile name="bank" fileName="logs/Bank.log"
+                     filePattern="logs/Bank-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d %p %C{1.} [%t] [%X{executionStep}] %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="4"/>
+        </RollingFile>
+
+
+    </Appenders>
+
+    <!--  FATAL  <- ERROR  <-  WARN  <-  INFO  <- DEBUG  <-  TRACE -->
+
+
+    <!--Logger is associated with a package or sometimes with a particular class-->
+    <loggers>
+        <!--    For account    -->
+        <Logger name="com.cognologix.bankingApplication.controllers.AccountController" level="debug">
+            <AppenderRef ref="account"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.services.implementation.AccountServiceImplementation"
+                level="debug">
+            <AppenderRef ref="account"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.exceptions.handlers.HandlerForAccount" level="error">
+            <AppenderRef ref="account"/>
+        </Logger>
+
+        <!--    For customer    -->
+        <Logger name="com.cognologix.bankingApplication.controllers.CustomerController" level="debug">
+            <AppenderRef ref="customer"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.services.implementation.CustomerServiceImplementation"
+                level="debug">
+            <AppenderRef ref="customer"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.exceptions.handlers.HandlerForCustomer" level="error">
+            <AppenderRef ref="customer"/>
+        </Logger>
+
+        <!--    For Bank    -->
+        <Logger name="com.cognologix.bankingApplication.controllers.BankController" level="debug">
+            <AppenderRef ref="bank"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.services.implementation.BankServiceImplementation"
+                level="debug">
+            <AppenderRef ref="bank"/>
+        </Logger>
+
+        <Logger name="com.cognologix.bankingApplication.exceptions.handlers.HandlerForBank" level="error">
+            <AppenderRef ref="bank"/>
+        </Logger>
+
+        <!--Root logger logs messages for all classes in the application-->
+        <root level="INFO">
+            <appender-ref ref="Console" level="INFO"/>
+        </root>
+    </loggers>
+
+</Configuration>
